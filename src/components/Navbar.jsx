@@ -7,7 +7,9 @@ import {
   Heart,
 } from "lucide-react";
 
-function Navbar() {
+function Navbar({ onLoginClick, isLoggedIn, onLogout }) {
+  const user = JSON.parse(localStorage.getItem("user"));
+
   return (
     <>
       <div className="top-bar">
@@ -20,6 +22,7 @@ function Navbar() {
           <div className="top-links">
             <span>Track Order</span>
             <span>Help Center</span>
+
             <span>
               <Globe size={14} />
               English
@@ -32,13 +35,16 @@ function Navbar() {
       <nav className="navbar">
         <div className="container nav-content">
 
+          {/* Logo */}
           <div className="logo">
             <div className="logo-icon">♻</div>
+
             <span>
               Share<span>Mart</span>
             </span>
           </div>
 
+          {/* Navigation Links */}
           <div className="nav-links">
             <a className="active">Home</a>
             <a>Donate Food</a>
@@ -48,26 +54,42 @@ function Navbar() {
             <a>About Us</a>
           </div>
 
+          {/* Right Side Actions */}
           <div className="nav-actions">
 
+            {/* Location */}
             <button className="location-btn">
               <MapPin size={16} />
               Dhaka, Bangladesh
               <ChevronDown size={15} />
             </button>
 
+            {/* Cart */}
             <button className="cart-btn">
               <ShoppingCart size={21} />
               <span className="cart-number">2</span>
             </button>
 
-            <button className="login-btn">
-              <User size={18} />
-              Login / Sign Up
-            </button>
+            {/* Login / Logout */}
+            {!isLoggedIn ? (
+              <button
+                className="login-btn"
+                onClick={onLoginClick}
+              >
+                <User size={18} />
+                Login / Sign Up
+              </button>
+            ) : (
+              <button
+                className="login-btn"
+                onClick={onLogout}
+              >
+                <User size={18} />
+                {user?.name || "User"} | Logout
+              </button>
+            )}
 
           </div>
-
         </div>
       </nav>
     </>
