@@ -20,9 +20,9 @@ function AuthModal({ mode, onClose, onSwitchMode, onSuccess })  {
   const handleSubmit = async (e) => {
   e.preventDefault();
 
-  const endpoint = isLogin
-    ? "http://localhost:5000/api/auth/login"
-    : "http://localhost:5000/api/auth/signup";
+ const endpoint = isLogin
+  ? "https://sharemart.onrender.com/api/auth/login"
+  : "https://sharemart.onrender.com/api/auth/signup";
 
   const payload = isLogin
     ? { email: formData.email, password: formData.password }
