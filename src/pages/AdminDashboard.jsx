@@ -10,6 +10,7 @@ import {
   Menu,
 } from "lucide-react";
 import "./AdminDashboard.css";
+
 function AdminDashboard() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -17,38 +18,110 @@ function AdminDashboard() {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
-  const getAdminDashboard = async () => {
+    const getAdminDashboard = async () => {
+      try {
+        const token = localStorage.getItem("token");
+
+        const response = await fetch(
+          "https://sharemart.onrender.com/api/admin/dashboard",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const data = await response.json();
+
+        if (response.ok) {
+          setMessage(data.message);
+        } else {
+          setError(data.message);
+        }
+      } catch (error) {
+        setError("Server connection failed.");
+      }
+    };
+
+    const getUsers = async () => {
+      try {
+        const token = localStorage.getItem("token");
+
+        const response = await fetch(
+          "https://sharemart.onrender.com/api/admin/users",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const data = await response.json();
+
+        if (response.ok) {
+          setUsers(data.users);
+        }
+      } catch (error) {
+        console.log("Failed to fetch users");
+      }
+    };
+
+    getAdminDashboard();
+    getUsers();
+  }, []);
+
+  const updateRole = async (userId, role) => {
     try {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        "https://sharemart.onrender.com/api/admin/dashboard",
+        `https://sharemart.onrender.com/api/admin/users/${userId}/role`,
         {
+          method: "PUT",
           headers: {
+            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
+          body: JSON.stringify({
+            role: role,
+          }),
         }
       );
 
       const data = await response.json();
 
       if (response.ok) {
-        setMessage(data.message);
+        setUsers(
+          users.map((user) =>
+            user._id === userId
+              ? { ...user, role: data.user.role }
+              : user
+          )
+        );
       } else {
-        setError(data.message);
+        alert(data.message);
       }
     } catch (error) {
-      setError("Server connection failed.");
+      alert("Server connection failed.");
     }
   };
 
-  const getUsers = async () => {
+  const deleteUser = async (userId, userName) => {
+    const confirmDelete = window.confirm(
+      `Are you sure you want to delete ${userName}?`
+    );
+
+    if (!confirmDelete) {
+      return;
+    }
+
     try {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        "https://sharemart.onrender.com/api/admin/users",
+        `https://sharemart.onrender.com/api/admin/users/${userId}`,
         {
+          method: "DELETE",
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -58,22 +131,23 @@ function AdminDashboard() {
       const data = await response.json();
 
       if (response.ok) {
-        setUsers(data.users);
+        setUsers(
+          users.filter((user) => user._id !== userId)
+        );
+      } else {
+        alert(data.message);
       }
     } catch (error) {
-      console.log("Failed to fetch users");
+      alert("Server connection failed.");
     }
   };
-
-  getAdminDashboard();
-  getUsers();
-}, []);
 
   return (
     <div className="dashboard-container">
 
       {/* Sidebar */}
       <aside className={`dashboard-sidebar ${sidebarOpen ? "open" : "closed"}`}>
+
         <div className="dashboard-logo">
           <div className="logo-icon">♻</div>
 
@@ -122,6 +196,7 @@ function AdminDashboard() {
           <LogOut size={20} />
           {sidebarOpen && <span>Logout</span>}
         </button>
+
       </aside>
 
       {/* Main Dashboard */}
@@ -212,86 +287,97 @@ function AdminDashboard() {
 
         </div>
 
-       {/* Users */}
-<div className="dashboard-section">
+        {/* Users */}
+        <div className="dashboard-section">
 
-  <div className="section-header">
-    <h2>Users</h2>
-  </div>
-
-  {users.length === 0 ? (
-    <div className="empty-dashboard">
-      <Users size={40} />
-      <h3>No users found</h3>
-      <p>Registered users will appear here.</p>
-    </div>
-  ) : (
-    <div>
-      {users.map((user) => (
-        <div
-          key={user._id}
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            padding: "15px 0",
-            borderBottom: "1px solid #eee",
-          }}
-        >
-          <div>
-            <strong>{user.name}</strong>
-            <p style={{ margin: "5px 0 0", color: "#888" }}>
-              {user.email}
-            </p>
+          <div className="section-header">
+            <h2>Users</h2>
           </div>
 
-          <select
-            value={user.role}
-            onChange={async (e) => {
-              const token = localStorage.getItem("token");
+          {users.length === 0 ? (
+            <div className="empty-dashboard">
+              <Users size={40} />
+              <h3>No users found</h3>
+              <p>Registered users will appear here.</p>
+            </div>
+          ) : (
+            <div>
 
-              const response = await fetch(
-                `https://sharemart.onrender.com/api/admin/users/${user._id}/role`,
-                {
-                  method: "PUT",
-                  headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                  },
-                  body: JSON.stringify({
-                    role: e.target.value,
-                  }),
-                }
-              );
+              {users.map((user) => (
+                <div
+                  key={user._id}
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    padding: "15px 0",
+                    borderBottom: "1px solid #eee",
+                  }}
+                >
 
-              const data = await response.json();
+                  <div>
+                    <strong>{user.name}</strong>
 
-              if (response.ok) {
-                setUsers(
-                  users.map((u) =>
-                    u._id === user._id
-                      ? { ...u, role: data.user.role }
-                      : u
-                  )
-                );
-              }
-            }}
-            style={{
-              padding: "8px 12px",
-              borderRadius: "8px",
-              border: "1px solid #ddd",
-            }}
-          >
-            <option value="user">User</option>
-            <option value="seller">Seller</option>
-            <option value="donor">Donor</option>
-          </select>
+                    <p
+                      style={{
+                        margin: "5px 0 0",
+                        color: "#888",
+                      }}
+                    >
+                      {user.email}
+                    </p>
+                  </div>
+
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "10px",
+                    }}
+                  >
+
+                    <select
+                      value={user.role}
+                      onChange={(e) =>
+                        updateRole(user._id, e.target.value)
+                      }
+                      style={{
+                        padding: "8px 12px",
+                        borderRadius: "8px",
+                        border: "1px solid #ddd",
+                      }}
+                    >
+                      <option value="user">User</option>
+                      <option value="seller">Seller</option>
+                      <option value="donor">Donor</option>
+                    </select>
+
+                    <button
+                      onClick={() =>
+                        deleteUser(user._id, user.name)
+                      }
+                      style={{
+                        padding: "8px 12px",
+                        border: "none",
+                        borderRadius: "8px",
+                        background: "#fdecec",
+                        color: "#c0392b",
+                        cursor: "pointer",
+                      }}
+                    >
+                      Delete
+                    </button>
+
+                  </div>
+
+                </div>
+              ))}
+
+            </div>
+          )}
+
         </div>
-      ))}
-    </div>
-  )}
 
-</div>
         {/* API Message */}
         {message && (
           <div className="dashboard-api-message">
