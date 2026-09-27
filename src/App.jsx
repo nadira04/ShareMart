@@ -9,6 +9,7 @@ import Footer from "./components/Footer";
 import AuthModal from "./components/AuthModal";
 import AdminDashboard from "./pages/AdminDashboard";
 import SellerDashboard from "./pages/SellerDashboard";
+import UserDashboard from "./pages/UserDashboard";
 
 function App() {
   const [authMode, setAuthMode] = useState(null);
@@ -60,10 +61,12 @@ function App() {
         onDashboardClick={() => setShowDashboard(true)}
       />
 
-      {showDashboard && user?.role === "admin" ? (
+     {showDashboard && user?.role === "admin" ? (
   <AdminDashboard />
 ) : showDashboard && user?.role === "seller" ? (
   <SellerDashboard />
+) : showDashboard && user?.role === "user" ? (
+  <UserDashboard />
 ) : (
         <>
           <main>

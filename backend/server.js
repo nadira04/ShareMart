@@ -6,6 +6,7 @@ const cors = require("cors");
 const authRoutes = require("./routes/authRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const sellerRoutes = require("./routes/sellerRoutes");
+const userRoutes = require("./routes/userRoutes");
 
 dotenv.config();
 
@@ -21,6 +22,7 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/seller", sellerRoutes);
+app.use("/api/user", userRoutes);
 
 mongoose
   .connect(process.env.MONGO_URI)
