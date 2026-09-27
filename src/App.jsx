@@ -10,6 +10,7 @@ import AuthModal from "./components/AuthModal";
 import AdminDashboard from "./pages/AdminDashboard";
 import SellerDashboard from "./pages/SellerDashboard";
 import UserDashboard from "./pages/UserDashboard";
+import DonorDashboard from "./pages/DonorDashboard";
 
 function App() {
   const [authMode, setAuthMode] = useState(null);
@@ -67,6 +68,8 @@ function App() {
   <SellerDashboard />
 ) : showDashboard && user?.role === "user" ? (
   <UserDashboard />
+ ) : showDashboard && user?.role === "donor" ? (
+  <DonorDashboard />
 ) : (
         <>
           <main>
