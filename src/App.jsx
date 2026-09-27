@@ -7,6 +7,8 @@ import Categories from "./components/Categories";
 import HowItWorks from "./components/HowItWorks";
 import Footer from "./components/Footer";
 import AuthModal from "./components/AuthModal";
+import AdminDashboard from "./pages/AdminDashboard";
+import SellerDashboard from "./pages/SellerDashboard";
 
 function App() {
   const [authMode, setAuthMode] = useState(null);
@@ -14,6 +16,8 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(
     !!localStorage.getItem("token")
   );
+
+  const [showDashboard, setShowDashboard] = useState(false);
 
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState("success");
@@ -39,9 +43,12 @@ function App() {
     localStorage.removeItem("user");
 
     setIsLoggedIn(false);
+    setShowDashboard(false);
 
     showToast("Logout successful!", "success");
   };
+
+  const user = JSON.parse(localStorage.getItem("user"));
 
   return (
     <div className="app">
@@ -50,16 +57,25 @@ function App() {
         onLoginClick={() => setAuthMode("login")}
         isLoggedIn={isLoggedIn}
         onLogout={handleLogout}
+        onDashboardClick={() => setShowDashboard(true)}
       />
 
-      <main>
-        <Hero />
-        <SearchSection />
-        <Categories />
-        <HowItWorks />
-      </main>
+      {showDashboard && user?.role === "admin" ? (
+  <AdminDashboard />
+) : showDashboard && user?.role === "seller" ? (
+  <SellerDashboard />
+) : (
+        <>
+          <main>
+            <Hero />
+            <SearchSection />
+            <Categories />
+            <HowItWorks />
+          </main>
 
-      <Footer />
+          <Footer />
+        </>
+      )}
 
       {authMode && (
         <AuthModal
