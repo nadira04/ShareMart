@@ -1,27 +1,23 @@
 const mongoose = require("mongoose");
 
-const userSchema = new mongoose.Schema(
+const roleSchema = new mongoose.Schema(
   {
     name: {
       type: String,
       required: true,
-    },
-
-    email: {
-      type: String,
-      required: true,
       unique: true,
+      trim: true,
     },
 
-    password: {
+    description: {
       type: String,
-      required: true,
+      default: "",
     },
 
-    roles: [
+    permissions: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Role",
+        ref: "Permission",
       },
     ],
   },
@@ -30,4 +26,4 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("User", userSchema);
+module.exports = mongoose.model("Role", roleSchema);

@@ -62,14 +62,14 @@ function App() {
         onDashboardClick={() => setShowDashboard(true)}
       />
 
-     {showDashboard && user?.role === "admin" ? (
+     {showDashboard && user?.roles?.some((role) => role.name === "admin") ? (
   <AdminDashboard />
-) : showDashboard && user?.role === "seller" ? (
+) : showDashboard && user?.roles?.some((role) => role.name === "seller") ? (
   <SellerDashboard />
-) : showDashboard && user?.role === "user" ? (
-  <UserDashboard />
- ) : showDashboard && user?.role === "donor" ? (
+) : showDashboard && user?.roles?.some((role) => role.name === "donor") ? (
   <DonorDashboard />
+) : showDashboard ? (
+  <UserDashboard />
 ) : (
         <>
           <main>

@@ -1,7 +1,7 @@
 const userModel = require("../models/user");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-//signup
+
 const signup = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -20,7 +20,7 @@ const signup = async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      role: "user",
+      roles: [],
     });
 
     res.status(201).json({
@@ -29,10 +29,9 @@ const signup = async (req, res) => {
         id: user._id,
         name: user.name,
         email: user.email,
-        role: user.role,
+        roles: user.roles,
       },
     });
-
   } catch (error) {
     res.status(500).json({
       message: "Signup failed",
@@ -41,8 +40,6 @@ const signup = async (req, res) => {
   }
 };
 
-
-//login
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -53,7 +50,14 @@ const login = async (req, res) => {
       });
     }
 
-    const user = await userModel.findOne({ email });
+    const user = await userModel
+      .findOne({ email })
+      .populate({
+        path: "roles",
+        populate: {
+          path: "permissions",
+        },
+      });
 
     if (!user) {
       return res.status(401).json({
@@ -72,7 +76,6 @@ const login = async (req, res) => {
     const token = jwt.sign(
       {
         userId: user._id,
-        role: user.role,
       },
       process.env.JWT_SECRET,
       {
@@ -80,17 +83,27 @@ const login = async (req, res) => {
       }
     );
 
+    const permissions = [];
+
+    user.roles.forEach((role) => {
+      role.permissions.forEach((permission) => {
+        if (!permissions.includes(permission.name)) {
+          permissions.push(permission.name);
+        }
+      });
+    });
+
     res.status(200).json({
       message: "Login successful",
-      token: token,
+      token,
       user: {
         id: user._id,
         name: user.name,
         email: user.email,
-        role: user.role,
+        roles: user.roles,
+        permissions,
       },
     });
-
   } catch (error) {
     res.status(500).json({
       message: "Server error",
