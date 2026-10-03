@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
@@ -8,8 +9,8 @@ const adminRoutes = require("./routes/adminRoutes");
 const sellerRoutes = require("./routes/sellerRoutes");
 const userRoutes = require("./routes/userRoutes");
 const donorRoutes = require("./routes/donorRoutes");
+const productRoutes = require("./routes/productRoutes");
 
-dotenv.config();
 
 const app = express();
 
@@ -25,7 +26,7 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/seller", sellerRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/donor", donorRoutes);
-
+app.use("/api/products", productRoutes);
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
