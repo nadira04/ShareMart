@@ -6,6 +6,28 @@ const signup = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
+
+    if (!name || name.trim().length < 2) {
+      return res.status(400).json({
+        message: "Please enter a valid name",
+      });
+    }
+
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        message: "Please enter a valid email address",
+      });
+    }
+
+    if (!passwordRegex.test(password)) {
+      return res.status(400).json({
+        message:
+          "Password must contain uppercase, lowercase and a number, and be at least 6 characters",
+      });
+    }
+
     const existingUser = await userModel.findOne({ email });
 
     if (existingUser) {
@@ -44,9 +66,17 @@ const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
     if (!email || !password) {
       return res.status(400).json({
         message: "Email and password are required",
+      });
+    }
+
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        message: "Please enter a valid email address",
       });
     }
 
@@ -60,8 +90,8 @@ const login = async (req, res) => {
       });
 
     if (!user) {
-      return res.status(401).json({
-        message: "Invalid email or password",
+      return res.status(404).json({
+        message: "Account not found. Please register first.",
       });
     }
 
@@ -69,7 +99,7 @@ const login = async (req, res) => {
 
     if (!isMatch) {
       return res.status(401).json({
-        message: "Invalid email or password",
+        message: "Incorrect password",
       });
     }
 

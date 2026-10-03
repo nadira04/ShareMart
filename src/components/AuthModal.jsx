@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { createPortal } from "react-dom";
 
-function AuthModal({ mode, onClose, onSwitchMode, onSuccess })  {
+function AuthModal({ mode, onClose, onSwitchMode, onSuccess }) {
   const isLogin = mode === "login";
 
   const [formData, setFormData] = useState({
@@ -18,57 +18,96 @@ function AuthModal({ mode, onClose, onSwitchMode, onSuccess })  {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
- const endpoint = isLogin
-  ? "https://sharemart.onrender.com/api/auth/login"
-  : "https://sharemart.onrender.com/api/auth/signup";
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
 
-  const payload = isLogin
-    ? { email: formData.email, password: formData.password }
-    : formData;
-
-  try {
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
-
-    const data = await response.json();
-
-    if (response.ok) {
-      if (isLogin) {
-        // Save JWT token
-        localStorage.setItem("token", data.token);
-
-        // Save logged-in user information
-        localStorage.setItem("user", JSON.stringify(data.user));
-
-        onClose();
-        onSuccess("Login successful!", "success");
-      } else {
-        onClose();
-        onSuccess("Signup successful!", "success");
-      }
-    } else {
-      onSuccess(data.message, "error");
+    if (!emailRegex.test(formData.email)) {
+      onSuccess("Please enter a valid email address", "error");
+      return;
     }
-  } catch (error) {
-    onSuccess("Server connection failed.", "error");
-  }
-};
+
+    if (!isLogin && !passwordRegex.test(formData.password)) {
+      onSuccess(
+        "Password must contain uppercase, lowercase and a number, and be at least 6 characters",
+        "error"
+      );
+      return;
+    }
+
+    if (isLogin && formData.password.length === 0) {
+      onSuccess("Please enter your password", "error");
+      return;
+    }
+
+    if (!isLogin && formData.name.trim().length < 2) {
+      onSuccess("Please enter your name", "error");
+      return;
+    }
+
+    const endpoint = isLogin
+      ? "https://sharemart.onrender.com/api/auth/login"
+      : "https://sharemart.onrender.com/api/auth/signup";
+
+    const payload = isLogin
+      ? {
+        email: formData.email,
+        password: formData.password,
+      }
+      : formData;
+
+    try {
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        if (isLogin) {
+          localStorage.setItem("token", data.token);
+
+          localStorage.setItem(
+            "user",
+            JSON.stringify(data.user)
+          );
+
+          onClose();
+          onSuccess("Login successful!", "success");
+        } else {
+          onClose();
+          onSuccess("Signup successful!", "success");
+        }
+      } else {
+        onSuccess(data.message, "error");
+      }
+    } catch (error) {
+      onSuccess("Server connection failed.", "error");
+    }
+  };
 
   return createPortal(
     <div className="modal-overlay">
       <div className="signup-modal">
-        <button className="close-btn" onClick={onClose}>
+
+        <button
+          className="close-btn"
+          onClick={onClose}
+        >
           ×
         </button>
 
-        <h2>{isLogin ? "Welcome Back" : "Create Account"}</h2>
+        <h2>
+          {isLogin
+            ? "Welcome Back"
+            : "Create Account"}
+        </h2>
+
         <p>
           {isLogin
             ? "Login to continue with ShareMart"
@@ -76,6 +115,7 @@ function AuthModal({ mode, onClose, onSwitchMode, onSuccess })  {
         </p>
 
         <form onSubmit={handleSubmit}>
+
           {!isLogin && (
             <input
               type="text"
@@ -93,6 +133,7 @@ function AuthModal({ mode, onClose, onSwitchMode, onSuccess })  {
             placeholder="Email Address"
             value={formData.email}
             onChange={handleChange}
+            autoComplete="email"
             required
           />
 
@@ -102,23 +143,43 @@ function AuthModal({ mode, onClose, onSwitchMode, onSuccess })  {
             placeholder="Password"
             value={formData.password}
             onChange={handleChange}
+            autoComplete={
+              isLogin
+                ? "current-password"
+                : "new-password"
+            }
             required
+            minLength={6}
           />
 
-          
-
-          <button type="submit" className="signup-submit">
+          <button
+            type="submit"
+            className="signup-submit"
+          >
             {isLogin ? "Login" : "Sign Up"}
           </button>
+
         </form>
 
-        <p style={{ marginTop: "16px", fontSize: "14px" }}>
+        <p
+          style={{
+            marginTop: "16px",
+            fontSize: "14px"
+          }}
+        >
           {isLogin ? (
             <>
               Don't have an account?{" "}
+
               <span
-                style={{ color: "#2f7d3c", cursor: "pointer", fontWeight: 600 }}
-                onClick={() => onSwitchMode("signup")}
+                style={{
+                  color: "#2f7d3c",
+                  cursor: "pointer",
+                  fontWeight: 600
+                }}
+                onClick={() =>
+                  onSwitchMode("signup")
+                }
               >
                 Sign Up
               </span>
@@ -126,15 +187,23 @@ function AuthModal({ mode, onClose, onSwitchMode, onSuccess })  {
           ) : (
             <>
               Already have an account?{" "}
+
               <span
-                style={{ color: "#2f7d3c", cursor: "pointer", fontWeight: 600 }}
-                onClick={() => onSwitchMode("login")}
+                style={{
+                  color: "#2f7d3c",
+                  cursor: "pointer",
+                  fontWeight: 600
+                }}
+                onClick={() =>
+                  onSwitchMode("login")
+                }
               >
                 Login
               </span>
             </>
           )}
         </p>
+
       </div>
     </div>,
     document.body
