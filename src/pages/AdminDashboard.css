@@ -297,3 +297,581 @@
     font-size: 20px;
   }
 }
+
+.user-actions>div {
+  display: flex;
+  flex-direction: row !important;
+  flex-wrap: wrap;
+  gap: 8px !important;
+}
+
+.user-actions>div label {
+  background: #f5f7f6;
+  border: 1px solid #dfe5e1;
+  border-radius: 8px;
+  padding: 8px 12px;
+  min-width: 90px;
+  transition: all 0.2s ease;
+}
+
+.user-actions>div label:hover {
+  border-color: #2f7d3c;
+  background: #eef7f0;
+}
+
+.user-actions>div label:has(input:checked) {
+  background: #e8f5eb;
+  border-color: #2f7d3c;
+}
+
+.user-actions>div label input {
+  accent-color: #2f7d3c;
+  cursor: pointer;
+}
+
+.user-actions>div label span {
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+}
+
+.user-actions>div>button {
+  width: 100%;
+  margin-top: 4px !important;
+}
+
+.user-actions>div {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px !important;
+  width: 100%;
+}
+
+.user-actions>div label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: auto;
+  min-width: 80px;
+  padding: 7px 10px;
+  background: #f7f9f8;
+  border: 1px solid #e1e6e3;
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: 0.2s ease;
+}
+
+.user-actions>div label:hover {
+  border-color: #2f7d3c;
+  background: #eef7f0;
+}
+
+.user-actions>div label:has(input:checked) {
+  background: #eaf6ed;
+  border-color: #2f7d3c;
+}
+
+.user-actions>div label input {
+  width: 14px;
+  height: 14px;
+  margin: 0;
+  accent-color: #2f7d3c;
+  cursor: pointer;
+}
+
+.user-actions>div label span {
+  font-size: 12px;
+  font-weight: 600;
+  color: #333;
+}
+
+.user-actions>div>button {
+  width: auto !important;
+  min-width: 75px;
+  padding: 7px 12px !important;
+  margin: 0 !important;
+  border: none;
+  border-radius: 7px;
+  background: #2f7d3c;
+  color: white;
+  font-size: 12px !important;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.user-actions>div>button:hover {
+  background: #256631;
+}
+
+/* User Cards */
+
+.user-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 16px 18px;
+  margin-bottom: 12px;
+  background: #ffffff;
+  border: 1px solid #e5e9e6;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.user-row>div:first-child {
+  flex: 1;
+  min-width: 0;
+}
+
+.user-row strong {
+  font-size: 15px;
+  color: #222;
+}
+
+.user-email {
+  margin: 4px 0 8px;
+  font-size: 12px;
+  color: #777;
+}
+
+.user-role-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 9px;
+  border-radius: 6px;
+  background: #eef7f0;
+  color: #2f7d3c;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* Right side */
+
+.user-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+/* Delete Button */
+
+.delete-user-btn {
+  border: none;
+  padding: 8px 14px;
+  border-radius: 7px;
+  background: #fff0f0;
+  color: #d63c3c;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.delete-user-btn:hover {
+  background: #d63c3c;
+  color: white;
+}
+
+.delete-user-btn:active {
+  transform: scale(0.96);
+}
+
+.overview-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.overview-grid button {
+  border: 1px solid #e4e9e5;
+  background: white;
+  border-radius: 12px;
+  padding: 18px;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  transition: 0.2s ease;
+}
+
+.overview-grid button:hover {
+  border-color: #2f7d3c;
+  transform: translateY(-2px);
+}
+
+.overview-grid button svg {
+  color: #2f7d3c;
+}
+
+.overview-grid button strong {
+  font-size: 14px;
+  color: #222;
+}
+
+.overview-grid button span {
+  font-size: 12px;
+  color: #777;
+}
+
+.user-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 16px 18px;
+  margin-bottom: 12px;
+  background: #fff;
+  border: 1px solid #e5e9e6;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.user-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.user-info strong {
+  font-size: 15px;
+  color: #222;
+}
+
+.user-email {
+  margin: 4px 0 8px;
+  font-size: 12px;
+  color: #777;
+}
+
+.user-role-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 9px;
+  border-radius: 6px;
+  background: #eef7f0;
+  color: #2f7d3c;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.user-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.role-selector {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px;
+  max-width: 500px;
+}
+
+.role-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: auto;
+  min-width: 75px;
+  padding: 7px 10px;
+  background: #f7f9f8;
+  border: 1px solid #e1e6e3;
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.role-checkbox:hover {
+  border-color: #2f7d3c;
+  background: #eef7f0;
+}
+
+.role-checkbox input {
+  width: 14px;
+  height: 14px;
+  margin: 0;
+  accent-color: #2f7d3c;
+}
+
+.role-checkbox span {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.save-role-btn {
+  border: none;
+  padding: 7px 12px;
+  border-radius: 7px;
+  background: #2f7d3c;
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.save-role-btn:hover {
+  background: #256631;
+}
+
+.delete-user-btn,
+.delete-role-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 7px;
+  background: #fff0f0;
+  color: #d63c3c;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.delete-user-btn:hover,
+.delete-role-btn:hover {
+  background: #d63c3c;
+  color: white;
+}
+
+.role-management-card {
+  background: #fff;
+  border: 1px solid #e5e9e6;
+  border-radius: 12px;
+  padding: 18px;
+  margin-bottom: 14px;
+}
+
+.role-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 15px;
+  margin-bottom: 18px;
+}
+
+.role-card-header strong {
+  font-size: 16px;
+  color: #222;
+  text-transform: capitalize;
+}
+
+.role-card-header p {
+  margin: 5px 0 0;
+  font-size: 12px;
+  color: #777;
+}
+
+.role-card-actions {
+  display: flex;
+  gap: 7px;
+}
+
+.edit-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  border: none;
+  padding: 7px 11px;
+  border-radius: 7px;
+  background: #eef4ff;
+  color: #3767b1;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.edit-btn:hover {
+  background: #3767b1;
+  color: white;
+}
+
+.permission-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #333;
+}
+
+.permission-title svg {
+  color: #2f7d3c;
+}
+
+.permission-checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.permission-checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 9px 10px;
+  border: 1px solid #e4e8e5;
+  border-radius: 8px;
+  background: #fafbfa;
+  cursor: pointer;
+}
+
+.permission-checkbox:hover {
+  border-color: #2f7d3c;
+  background: #eef7f0;
+}
+
+.permission-checkbox input {
+  margin-top: 2px;
+  accent-color: #2f7d3c;
+}
+
+.permission-checkbox div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.permission-checkbox strong {
+  font-size: 11px;
+  color: #333;
+}
+
+.permission-checkbox small {
+  font-size: 10px;
+  color: #888;
+}
+
+.role-permission-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 15px;
+  padding-top: 12px;
+  border-top: 1px solid #edf0ee;
+}
+
+.role-permission-footer span {
+  font-size: 11px;
+  color: #777;
+}
+
+.save-permission-btn {
+  border: none;
+  padding: 8px 14px;
+  border-radius: 7px;
+  background: #2f7d3c;
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.save-permission-btn:hover {
+  background: #256631;
+}
+
+.permissions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.permission-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 15px 17px;
+  background: white;
+  border: 1px solid #e5e9e6;
+  border-radius: 10px;
+}
+
+.permission-row strong {
+  font-size: 13px;
+  color: #333;
+}
+
+.permission-row p {
+  margin: 4px 0 0;
+  font-size: 11px;
+  color: #777;
+}
+
+.permission-actions {
+  display: flex;
+  gap: 7px;
+}
+
+@media (max-width: 1000px) {
+  .permission-checkbox-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .overview-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .user-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .user-actions {
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: 700px) {
+
+  .permission-checkbox-grid,
+  .overview-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .user-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .role-selector {
+    max-width: none;
+  }
+
+  .delete-user-btn {
+    justify-content: center;
+  }
+
+  .role-card-header,
+  .permission-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .role-card-actions,
+  .permission-actions {
+    width: 100%;
+  }
+}

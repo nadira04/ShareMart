@@ -8,9 +8,10 @@ import HowItWorks from "./components/HowItWorks";
 import Footer from "./components/Footer";
 import AuthModal from "./components/AuthModal";
 import AdminDashboard from "./pages/AdminDashboard";
-import SellerDashboard from "./pages/SellerDashboard";
-import UserDashboard from "./pages/UserDashboard";
-import DonorDashboard from "./pages/DonorDashboard";
+import DynamicDashboard from "./pages/DynamicDashboard";
+import AddProduct from "./pages/AddProduct";
+import Marketplace from "./pages/Marketplace";
+
 
 function App() {
   const [authMode, setAuthMode] = useState(null);
@@ -20,6 +21,8 @@ function App() {
   );
 
   const [showDashboard, setShowDashboard] = useState(false);
+  const [showAddProduct, setShowAddProduct] = useState(false);
+  const [showMarketplace, setShowMarketplace] = useState(false);
 
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState("success");
@@ -54,23 +57,41 @@ function App() {
 
   return (
     <div className="app">
-
       <Navbar
         onLoginClick={() => setAuthMode("login")}
         isLoggedIn={isLoggedIn}
         onLogout={handleLogout}
-        onDashboardClick={() => setShowDashboard(true)}
+        onDashboardClick={() => {
+          setShowAddProduct(false);
+          setShowMarketplace(false);
+          setShowDashboard(true);
+        }}
+        onHomeClick={() => {
+          setShowAddProduct(false);
+          setShowMarketplace(false);
+          setShowDashboard(false);
+        }}
+        onMarketplaceClick={() => {
+          setShowAddProduct(false);
+          setShowDashboard(false);
+          setShowMarketplace(true);
+        }}
       />
-
-     {showDashboard && user?.roles?.some((role) => role.name === "admin") ? (
-  <AdminDashboard />
-) : showDashboard && user?.roles?.some((role) => role.name === "seller") ? (
-  <SellerDashboard />
-) : showDashboard && user?.roles?.some((role) => role.name === "donor") ? (
-  <DonorDashboard />
-) : showDashboard ? (
-  <UserDashboard />
-) : (
+      {showAddProduct ? (
+        <AddProduct />
+      ) : showMarketplace ? (
+        <Marketplace />
+      ) : showDashboard &&
+        user?.permissions?.includes("role.view") ? (
+        <AdminDashboard />
+      ) : showDashboard ? (
+        <DynamicDashboard
+          onAddProduct={() => {
+            setShowMarketplace(false);
+            setShowAddProduct(true);
+          }}
+        />
+      ) : (
         <>
           <main>
             <Hero />

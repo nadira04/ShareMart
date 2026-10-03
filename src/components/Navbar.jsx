@@ -7,7 +7,14 @@ import {
   Heart,
 } from "lucide-react";
 
-function Navbar({ onLoginClick, isLoggedIn, onLogout, onDashboardClick }) {
+function Navbar({
+  onLoginClick,
+  isLoggedIn,
+  onLogout,
+  onDashboardClick,
+  onHomeClick,
+  onMarketplaceClick,
+}) {
   const user = JSON.parse(localStorage.getItem("user"));
 
   return (
@@ -45,20 +52,31 @@ function Navbar({ onLoginClick, isLoggedIn, onLogout, onDashboardClick }) {
           </div>
 
           {/* Navigation Links */}
-      <div className="nav-links">
-  <a className="active">Home</a>
-  <a>Donate Food</a>
-  <a>Discount Food</a>
-  <a>Marketplace</a>
-  <a>How It Works</a>
-  <a>About Us</a>
+          <div className="nav-links">
+            <a
+              className="active"
+              onClick={onHomeClick}
+              style={{ cursor: "pointer" }}
+            >
+              Home
+            </a>
+            <a>Donate Food</a>
+            <a>Discount Food</a>
+            <a
+              onClick={onMarketplaceClick}
+              style={{ cursor: "pointer" }}
+            >
+              Marketplace
+            </a>
+            <a>How It Works</a>
+            <a>About Us</a>
 
-  {isLoggedIn && (
-    <a onClick={onDashboardClick} style={{ cursor: "pointer" }}>
-      Dashboard
-    </a>
-  )}
-</div>
+            {isLoggedIn && (
+              <a onClick={onDashboardClick} style={{ cursor: "pointer" }}>
+                Dashboard
+              </a>
+            )}
+          </div>
 
           {/* Right Side Actions */}
           <div className="nav-actions">
