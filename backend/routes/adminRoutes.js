@@ -8,6 +8,7 @@ const permissionMiddleware = require("../middleware/permissionMiddleware");
 const userModel = require("../models/user");
 const Role = require("../models/role");
 const Permission = require("../models/permission");
+const productModel = require("../models/product");
 
 router.get(
   "/dashboard",
@@ -407,6 +408,104 @@ router.delete(
     } catch (error) {
       res.status(500).json({
         message: "Failed to delete user",
+        error: error.message,
+      });
+    }
+  }
+);
+
+// Get pending products
+router.get(
+  "/pending-products",
+  authMiddleware,
+  permissionMiddleware("product.approve"),
+  async (req, res) => {
+    try {
+      const products = await productModel
+        .find({ status: "pending" })
+        .populate("seller", "name email")
+        .sort({ createdAt: -1 });
+
+      res.status(200).json({
+        products,
+      });
+    } catch (error) {
+      res.status(500).json({
+        message: "Failed to fetch pending products",
+        error: error.message,
+      });
+    }
+  }
+);
+
+// Approve a product
+router.patch(
+  "/products/:id/approve",
+  authMiddleware,
+  permissionMiddleware("product.approve"),
+  async (req, res) => {
+    try {
+      const product = await productModel.findByIdAndUpdate(
+        req.params.id,
+        {
+          status: "approved",
+        },
+        {
+          new: true,
+          runValidators: true,
+        }
+      );
+
+      if (!product) {
+        return res.status(404).json({
+          message: "Product not found",
+        });
+      }
+
+      res.status(200).json({
+        message: "Product approved successfully",
+        product,
+      });
+    } catch (error) {
+      res.status(500).json({
+        message: "Failed to approve product",
+        error: error.message,
+      });
+    }
+  }
+);
+
+// Reject a product
+router.patch(
+  "/products/:id/reject",
+  authMiddleware,
+  permissionMiddleware("product.approve"),
+  async (req, res) => {
+    try {
+      const product = await productModel.findByIdAndUpdate(
+        req.params.id,
+        {
+          status: "rejected",
+        },
+        {
+          new: true,
+          runValidators: true,
+        }
+      );
+
+      if (!product) {
+        return res.status(404).json({
+          message: "Product not found",
+        });
+      }
+
+      res.status(200).json({
+        message: "Product rejected successfully",
+        product,
+      });
+    } catch (error) {
+      res.status(500).json({
+        message: "Failed to reject product",
         error: error.message,
       });
     }
