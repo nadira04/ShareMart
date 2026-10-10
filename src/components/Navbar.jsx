@@ -3,8 +3,6 @@ import {
   MapPin,
   User,
   ChevronDown,
-  Globe,
-  Heart,
 } from "lucide-react";
 
 function Navbar({
@@ -19,26 +17,6 @@ function Navbar({
 
   return (
     <>
-      <div className="top-bar">
-        <div className="container top-bar-content">
-          <span>
-            <Heart size={14} fill="white" />
-            Together, we can reduce waste and create a better tomorrow.
-          </span>
-
-          <div className="top-links">
-            <span>Track Order</span>
-            <span>Help Center</span>
-
-            <span>
-              <Globe size={14} />
-              English
-              <ChevronDown size={14} />
-            </span>
-          </div>
-        </div>
-      </div>
-
       <nav className="navbar">
         <div className="container nav-content">
 

@@ -7,16 +7,9 @@ function Marketplace() {
 
     useEffect(() => {
         const fetchProducts = async () => {
-            const token = localStorage.getItem("token");
-
             try {
                 const response = await fetch(
-                    "https://sharemart.onrender.com/api/products",
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                    }
+                    "https://sharemart.onrender.com/api/products"
                 );
 
                 const data = await response.json();
@@ -26,7 +19,7 @@ function Marketplace() {
                     return;
                 }
 
-                setProducts(data.products);
+                setProducts(data.products || []);
             } catch (error) {
                 setError("Server connection failed.");
             } finally {
@@ -48,10 +41,8 @@ function Marketplace() {
     return (
         <div className="marketplace-page">
             <div className="marketplace-container">
-
                 <div className="marketplace-header">
                     <h1>Marketplace</h1>
-
                     <p>
                         Discover quality second-hand products from ShareMart users.
                     </p>
@@ -60,17 +51,14 @@ function Marketplace() {
                 {products.length === 0 ? (
                     <div className="empty-marketplace">
                         <h3>No products available</h3>
-
                         <p>
-                            Be the first one to add a product!
+                            Approved products will appear here.
                         </p>
                     </div>
                 ) : (
                     <div className="product-grid">
-
                         {products.map((product) => (
                             <div className="product-card" key={product._id}>
-
                                 {product.image ? (
                                     <img
                                         src={product.image}
@@ -83,7 +71,6 @@ function Marketplace() {
                                 )}
 
                                 <div className="product-info">
-
                                     <span className="product-category">
                                         {product.category}
                                     </span>
@@ -95,7 +82,6 @@ function Marketplace() {
                                     </p>
 
                                     <div className="product-bottom">
-
                                         <strong>
                                             ৳{product.price}
                                         </strong>
@@ -103,7 +89,6 @@ function Marketplace() {
                                         <span>
                                             {product.condition}
                                         </span>
-
                                     </div>
 
                                     <p className="product-location">
@@ -115,15 +100,11 @@ function Marketplace() {
                                             Seller: {product.seller.name}
                                         </p>
                                     )}
-
                                 </div>
-
                             </div>
                         ))}
-
                     </div>
                 )}
-
             </div>
         </div>
     );

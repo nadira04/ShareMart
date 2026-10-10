@@ -23,11 +23,6 @@ function Footer() {
             second life.
           </p>
 
-          <strong>
-            <Heart size={16} fill="currentColor" />
-            Share more. Waste less.
-          </strong>
-
         </div>
 
 
@@ -88,7 +83,6 @@ function Footer() {
           </span>
 
           <span>
-            Designed for a better tomorrow 🌱
           </span>
 
         </div>

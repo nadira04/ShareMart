@@ -65,7 +65,7 @@ function AddProduct() {
                 return;
             }
 
-            setMessage("Product added successfully!");
+            setMessage("Product submitted successfully! Pending for admin approval.");
 
             setFormData({
                 name: "",
