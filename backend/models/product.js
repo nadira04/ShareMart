@@ -7,43 +7,41 @@ const productSchema = new mongoose.Schema(
             required: true,
             trim: true,
         },
-
         description: {
             type: String,
             required: true,
         },
-
         price: {
             type: Number,
             required: true,
             min: 0,
         },
-
         category: {
             type: String,
             required: true,
         },
-
         condition: {
             type: String,
             required: true,
             enum: ["Like New", "Good", "Used"],
         },
-
         location: {
             type: String,
             required: true,
         },
-
         image: {
             type: String,
             default: "",
         },
-
         seller: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
             required: true,
+        },
+        status: {
+            type: String,
+            enum: ["pending", "approved", "rejected"],
+            default: "pending",
         },
     },
     {

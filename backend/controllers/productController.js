@@ -15,7 +15,8 @@ const createProduct = async (req, res) => {
         if (
             !name ||
             !description ||
-            !price ||
+            price === undefined ||
+            price === "" ||
             !category ||
             !condition ||
             !location
@@ -57,10 +58,11 @@ const createProduct = async (req, res) => {
             location,
             image: imageUrl,
             seller: req.user.userId,
+            status: "pending",
         });
 
         res.status(201).json({
-            message: "Product added successfully",
+            message: "Product submitted for admin approval",
             product,
         });
     } catch (error) {
@@ -76,7 +78,7 @@ const createProduct = async (req, res) => {
 const getProducts = async (req, res) => {
     try {
         const products = await productModel
-            .find()
+            .find({ status: "approved" })
             .populate("seller", "name email")
             .sort({ createdAt: -1 });
 
@@ -87,8 +89,7 @@ const getProducts = async (req, res) => {
         console.log("PRODUCT ERROR:", error);
 
         res.status(500).json({
-            message: "Failed to add product",
-            error: error.message,
+            message: "Failed to load products",
         });
     }
 };

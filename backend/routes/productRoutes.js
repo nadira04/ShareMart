@@ -21,8 +21,6 @@ router.post(
 
 router.get(
     "/",
-    authMiddleware,
-    permissionMiddleware("product.view"),
     getProducts
 );
 
