@@ -1,5 +1,7 @@
+
 const Donation = require("../models/donation");
 
+// Create a donation
 const createDonation = async (req, res) => {
     try {
         const {
@@ -49,6 +51,7 @@ const createDonation = async (req, res) => {
     }
 };
 
+// Get all approved donations
 const getDonations = async (req, res) => {
     try {
         const donations = await Donation.find({
@@ -64,12 +67,14 @@ const getDonations = async (req, res) => {
     }
 };
 
+// Get donations created by the logged-in donor
 const getMyDonations = async (req, res) => {
     try {
         const donations = await Donation.find({
             donor: req.user.userId
         })
             .populate("acceptedNgo", "name email")
+            .populate("requests.ngo", "name email")
             .sort({ createdAt: -1 });
 
         res.status(200).json(donations);
@@ -77,6 +82,8 @@ const getMyDonations = async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 };
+
+// Get donations accepted by the logged-in NGO
 const getMyAcceptedDonations = async (req, res) => {
     try {
         const donations = await Donation.find({
@@ -92,10 +99,53 @@ const getMyAcceptedDonations = async (req, res) => {
     }
 };
 
+// Get all donation requests submitted by the logged-in NGO
+const getMyRequests = async (req, res) => {
+    try {
+        const donations = await Donation.find({
+            "requests.ngo": req.user.userId
+        })
+            .populate("donor", "name email")
+            .sort({ updatedAt: -1 });
+
+        const myRequests = [];
+
+        donations.forEach((donation) => {
+            const request = donation.requests.find(
+                (item) =>
+                    item.ngo.toString() === req.user.userId.toString()
+            );
+
+            if (request) {
+                myRequests.push({
+                    _id: donation._id,
+                    title: donation.title,
+                    description: donation.description,
+                    category: donation.category,
+                    quantity: donation.quantity,
+                    location: donation.location,
+                    image: donation.image,
+                    expiryDate: donation.expiryDate,
+                    approvalStatus: donation.approvalStatus,
+                    donationStatus: donation.status,
+                    requestId: request._id,
+                    requestStatus: request.status,
+                    requestedAt: request.requestedAt,
+                    donor: donation.donor
+                });
+            }
+        });
+
+        res.status(200).json(myRequests);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
+
+// NGO requests a donation
 const requestDonation = async (req, res) => {
     try {
         const donation = await Donation.findById(req.params.id);
-
 
         if (!donation) {
             return res.status(404).json({
@@ -109,7 +159,6 @@ const requestDonation = async (req, res) => {
             });
         }
 
-
         if (donation.status !== "Available") {
             return res.status(400).json({
                 message: "This donation is no longer available."
@@ -122,12 +171,12 @@ const requestDonation = async (req, res) => {
             });
         }
 
-        if (
-            donation.requests.some(
-                (request) =>
-                    request.ngo.toString() === req.user.userId.toString()
-            )
-        ) {
+        const alreadyRequested = donation.requests.some(
+            (request) =>
+                request.ngo.toString() === req.user.userId.toString()
+        );
+
+        if (alreadyRequested) {
             return res.status(400).json({
                 message: "You have already requested this donation."
             });
@@ -148,6 +197,7 @@ const requestDonation = async (req, res) => {
     }
 };
 
+// Donor accepts or rejects an NGO request
 const updateDonationRequest = async (req, res) => {
     try {
         const { action } = req.body;
@@ -218,6 +268,7 @@ const updateDonationRequest = async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 };
+
 // Get donations waiting for admin approval
 const getPendingDonations = async (req, res) => {
     try {
@@ -233,7 +284,7 @@ const getPendingDonations = async (req, res) => {
     }
 };
 
-// Approve or reject a donation
+// Admin approves or rejects a donation
 const reviewDonation = async (req, res) => {
     try {
         const { action } = req.body;
@@ -275,11 +326,13 @@ const reviewDonation = async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 };
+
 module.exports = {
     createDonation,
     getDonations,
     getMyDonations,
     getMyAcceptedDonations,
+    getMyRequests,
     requestDonation,
     updateDonationRequest,
     getPendingDonations,

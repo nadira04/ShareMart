@@ -378,7 +378,14 @@ function DonorDashboard({ onAddProduct, onLogout }) {
                   <p>Quantity: {donation.quantity}</p>
                   <p>Location: {donation.location}</p>
                   <p>
-                    Status: <strong>{donation.status}</strong>
+                    Approval Status:{" "}
+                    <strong>
+                      {donation.approvalStatus === "Approved"
+                        ? "Approved"
+                        : donation.approvalStatus === "Rejected"
+                          ? "Rejected"
+                          : "Waiting for Admin Approval"}
+                    </strong>
                   </p>
 
                   {donation.expiryDate && (

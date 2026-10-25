@@ -1,3 +1,4 @@
+
 import {
   ShoppingCart,
   MapPin,
@@ -12,89 +13,107 @@ function Navbar({
   onDashboardClick,
   onHomeClick,
   onMarketplaceClick,
+  onDonatedItemClick,
 }) {
   const user = JSON.parse(localStorage.getItem("user"));
 
   return (
-    <>
-      <nav className="navbar">
-        <div className="container nav-content">
-
-          {/* Logo */}
-          <div className="logo">
-            <div className="logo-icon">♻</div>
-
-            <span>
-              Share<span>Mart</span>
-            </span>
-          </div>
-
-          {/* Navigation Links */}
-          <div className="nav-links">
-            <a
-              className="active"
-              onClick={onHomeClick}
-              style={{ cursor: "pointer" }}
-            >
-              Home
-            </a>
-            <a>Donate Food</a>
-            <a>Discount Food</a>
-            <a
-              onClick={onMarketplaceClick}
-              style={{ cursor: "pointer" }}
-            >
-              Marketplace
-            </a>
-            <a>How It Works</a>
-            <a>About Us</a>
-
-            {isLoggedIn && (
-              <a onClick={onDashboardClick} style={{ cursor: "pointer" }}>
-                Dashboard
-              </a>
-            )}
-          </div>
-
-          {/* Right Side Actions */}
-          <div className="nav-actions">
-
-            {/* Location */}
-            <button className="location-btn">
-              <MapPin size={16} />
-              Dhaka, Bangladesh
-              <ChevronDown size={15} />
-            </button>
-
-            {/* Cart */}
-            <button className="cart-btn">
-              <ShoppingCart size={21} />
-              <span className="cart-number">2</span>
-            </button>
-
-            {/* Login / Logout */}
-            {!isLoggedIn ? (
-              <button
-                className="login-btn"
-                onClick={onLoginClick}
-              >
-                <User size={18} />
-                Login / Sign Up
-              </button>
-            ) : (
-              <button
-                className="login-btn"
-                onClick={onLogout}
-              >
-                <User size={18} />
-                {user?.name || "User"} | Logout
-              </button>
-            )}
-
-          </div>
+    <nav className="navbar">
+      <div className="container nav-content">
+        {/* Logo */}
+        <div
+          className="logo"
+          onClick={onHomeClick}
+          style={{ cursor: "pointer" }}
+        >
+          <div className="logo-icon">♻</div>
+          <span>
+            Share<span>Mart</span>
+          </span>
         </div>
-      </nav>
-    </>
+
+        {/* Navigation Links */}
+        <div className="nav-links">
+          <a
+            className="active"
+            onClick={onHomeClick}
+            style={{ cursor: "pointer" }}
+          >
+            Home
+          </a>
+
+          <a
+            onClick={onDonatedItemClick}
+            style={{ cursor: "pointer" }}
+          >
+            Donated Item
+          </a>
+
+          <a style={{ cursor: "pointer" }}>
+            Discount Item
+          </a>
+
+          <a
+            onClick={onMarketplaceClick}
+            style={{ cursor: "pointer" }}
+          >
+            Marketplace
+          </a>
+
+          <a style={{ cursor: "pointer" }}>
+            How It Works
+          </a>
+
+          <a style={{ cursor: "pointer" }}>
+            About Us
+          </a>
+
+          {isLoggedIn && (
+            <a
+              onClick={onDashboardClick}
+              style={{ cursor: "pointer" }}
+            >
+              Dashboard
+            </a>
+          )}
+        </div>
+
+        {/* Right Side Actions */}
+        <div className="nav-actions">
+          {/* Location */}
+          <button className="location-btn">
+            <MapPin size={16} />
+            Dhaka, Bangladesh
+            <ChevronDown size={15} />
+          </button>
+
+          {/* Cart */}
+          <button className="cart-btn">
+            <ShoppingCart size={21} />
+            <span className="cart-number">2</span>
+          </button>
+
+          {/* Login / Logout */}
+          {!isLoggedIn ? (
+            <button
+              className="login-btn"
+              onClick={onLoginClick}
+            >
+              <User size={18} />
+              Login / Sign Up
+            </button>
+          ) : (
+            <button
+              className="login-btn"
+              onClick={onLogout}
+            >
+              <User size={18} />
+              {user?.name || "User"} | Logout
+            </button>
+          )}
+        </div>
+      </div>
+    </nav>
   );
 }
 

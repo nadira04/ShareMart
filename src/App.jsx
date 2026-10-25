@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 
 import Navbar from "./components/Navbar";
@@ -12,7 +13,9 @@ import DynamicDashboard from "./pages/DynamicDashboard";
 import DonorDashboard from "./pages/DonorDashboard";
 import AddProduct from "./pages/AddProduct";
 import Marketplace from "./pages/Marketplace";
-
+import AddDonation from "./pages/AddDonation";
+import DonationPage from "./pages/DonationPage";
+import MyRequests from "./pages/MyRequests";
 
 function App() {
   const [authMode, setAuthMode] = useState(null);
@@ -24,6 +27,9 @@ function App() {
   const [showDashboard, setShowDashboard] = useState(false);
   const [showAddProduct, setShowAddProduct] = useState(false);
   const [showMarketplace, setShowMarketplace] = useState(false);
+  const [showAddDonation, setShowAddDonation] = useState(false);
+  const [showDonationPage, setShowDonationPage] = useState(false);
+  const [showMyRequests, setShowMyRequests] = useState(false);
 
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState("success");
@@ -40,7 +46,6 @@ function App() {
   const handleLoginSuccess = () => {
     setIsLoggedIn(true);
     setAuthMode(null);
-
     showToast("Login successful!", "success");
   };
 
@@ -50,11 +55,58 @@ function App() {
 
     setIsLoggedIn(false);
     setShowDashboard(false);
+    setShowAddProduct(false);
+    setShowAddDonation(false);
+    setShowMarketplace(false);
+    setShowDonationPage(false);
+    setShowMyRequests(false);
 
     showToast("Logout successful!", "success");
   };
 
-  const user = JSON.parse(localStorage.getItem("user"));
+  let user = null;
+
+  try {
+    user = JSON.parse(localStorage.getItem("user"));
+  } catch (error) {
+    console.error("Could not read saved user:", error);
+  }
+
+  const goHome = () => {
+    setShowAddProduct(false);
+    setShowAddDonation(false);
+    setShowMarketplace(false);
+    setShowDonationPage(false);
+    setShowMyRequests(false);
+    setShowDashboard(false);
+  };
+
+  const goToDashboard = () => {
+    setShowAddProduct(false);
+    setShowAddDonation(false);
+    setShowMarketplace(false);
+    setShowDonationPage(false);
+    setShowMyRequests(false);
+    setShowDashboard(true);
+  };
+
+  const goToDonations = () => {
+    setShowAddProduct(false);
+    setShowAddDonation(false);
+    setShowMarketplace(false);
+    setShowMyRequests(false);
+    setShowDashboard(false);
+    setShowDonationPage(true);
+  };
+
+  const goToMyRequests = () => {
+    setShowAddProduct(false);
+    setShowAddDonation(false);
+    setShowMarketplace(false);
+    setShowDonationPage(false);
+    setShowDashboard(false);
+    setShowMyRequests(true);
+  };
 
   return (
     <div className="app">
@@ -62,30 +114,34 @@ function App() {
         onLoginClick={() => setAuthMode("login")}
         isLoggedIn={isLoggedIn}
         onLogout={handleLogout}
-        onDashboardClick={() => {
-          setShowAddProduct(false);
-          setShowMarketplace(false);
-          setShowDashboard(true);
-        }}
-        onHomeClick={() => {
-          setShowAddProduct(false);
-          setShowMarketplace(false);
-          setShowDashboard(false);
-        }}
+        onDashboardClick={goToDashboard}
+        onHomeClick={goHome}
         onMarketplaceClick={() => {
           setShowAddProduct(false);
+          setShowAddDonation(false);
           setShowDashboard(false);
+          setShowDonationPage(false);
+          setShowMyRequests(false);
           setShowMarketplace(true);
         }}
+        onDonatedItemClick={goToDonations}
       />
-      {showAddProduct ? (
+
+      {showMyRequests ? (
+        <MyRequests onBack={goToDashboard} />
+      ) : showDonationPage ? (
+        <DonationPage />
+      ) : showAddDonation ? (
+        <AddDonation
+          onBack={goToDashboard}
+          onSuccess={goToDashboard}
+        />
+      ) : showAddProduct ? (
         <AddProduct />
       ) : showMarketplace ? (
         <Marketplace />
-      ) : showDashboard &&
-        user?.permissions?.includes("role.view") ? (
+      ) : showDashboard && user?.permissions?.includes("role.view") ? (
         <AdminDashboard />
-
       ) : showDashboard &&
         user?.roles?.some((role) =>
           (typeof role === "string" ? role : role.name)
@@ -96,19 +152,31 @@ function App() {
           onAddProduct={() => {
             setShowDashboard(false);
             setShowMarketplace(false);
-            setShowAddProduct(true);
+            setShowAddProduct(false);
+            setShowAddDonation(true);
           }}
           onLogout={handleLogout}
         />
       ) : showDashboard ? (
         <DynamicDashboard
           onAddProduct={() => {
+            setShowDashboard(false);
             setShowMarketplace(false);
+            setShowDonationPage(false);
+            setShowMyRequests(false);
             setShowAddProduct(true);
+          }}
+          onViewDonations={goToDonations}
+          onViewMyRequests={goToMyRequests}
+          onCreateDonation={() => {
+            setShowDashboard(false);
+            setShowMarketplace(false);
+            setShowDonationPage(false);
+            setShowMyRequests(false);
+            setShowAddDonation(true);
           }}
         />
       ) : (
-
         <>
           <main>
             <Hero />
@@ -116,7 +184,6 @@ function App() {
             <Categories />
             <HowItWorks />
           </main>
-
           <Footer />
         </>
       )}
@@ -141,11 +208,9 @@ function App() {
           <span className="toast-icon">
             {toastType === "success" ? "✓" : "×"}
           </span>
-
           <span>{toastMessage}</span>
         </div>
       )}
-
     </div>
   );
 }

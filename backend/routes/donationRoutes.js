@@ -1,6 +1,5 @@
 
 const express = require("express");
-
 const router = express.Router();
 
 const authMiddleware = require("../middleware/authMiddleware");
@@ -12,6 +11,7 @@ const {
     getDonations,
     getMyDonations,
     getMyAcceptedDonations,
+    getMyRequests,
     requestDonation,
     updateDonationRequest,
     getPendingDonations,
@@ -40,6 +40,13 @@ router.get(
     authMiddleware,
     roleMiddleware("ngo"),
     getMyAcceptedDonations
+);
+
+router.get(
+    "/my-requests",
+    authMiddleware,
+    roleMiddleware("ngo"),
+    getMyRequests
 );
 
 router.post(
@@ -72,4 +79,5 @@ router.patch(
     permissionMiddleware("donation.approve"),
     reviewDonation
 );
+
 module.exports = router;
