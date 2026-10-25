@@ -1,3 +1,4 @@
+
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 
@@ -91,6 +92,18 @@ const permissions = [
     name: "donation.delete",
     description: "Delete donations",
   },
+  {
+    name: "donation.approve",
+    description: "Approve or reject donations",
+  },
+  {
+    name: "donation.request",
+    description: "Request available donations",
+  },
+  {
+    name: "donation.accept",
+    description: "Accept NGO donation requests",
+  },
 ];
 
 const seed = async () => {
@@ -116,6 +129,7 @@ const seed = async () => {
 
     const allPermissions = Object.values(permissionMap);
 
+    // Admin role
     await Role.findOneAndUpdate(
       { name: "admin" },
       {
@@ -129,6 +143,7 @@ const seed = async () => {
       }
     );
 
+    // Seller role
     await Role.findOneAndUpdate(
       { name: "seller" },
       {
@@ -148,6 +163,7 @@ const seed = async () => {
       }
     );
 
+    // Donor role
     await Role.findOneAndUpdate(
       { name: "donor" },
       {
@@ -159,6 +175,7 @@ const seed = async () => {
           permissionMap["donation.create"],
           permissionMap["donation.update"],
           permissionMap["donation.delete"],
+          permissionMap["donation.accept"],
         ],
       },
       {
@@ -167,6 +184,7 @@ const seed = async () => {
       }
     );
 
+    // Normal user role
     await Role.findOneAndUpdate(
       { name: "user" },
       {
@@ -184,12 +202,33 @@ const seed = async () => {
       }
     );
 
-    console.log("Permissions created");
-    console.log("Roles created");
+    // NGO role
+    await Role.findOneAndUpdate(
+      { name: "ngo" },
+      {
+        name: "ngo",
+        description: "NGO donation access",
+        permissions: [
+          permissionMap["dashboard.view"],
+          permissionMap["donation.view"],
+          permissionMap["donation.request"],
+        ],
+      },
+      {
+        new: true,
+        upsert: true,
+      }
+    );
 
-    process.exit();
+    console.log("Permissions created or updated");
+    console.log("Admin, seller, donor, user and ngo roles created or updated");
+
+    await mongoose.disconnect();
+    process.exit(0);
   } catch (error) {
     console.log("Seed error:", error.message);
+
+    await mongoose.disconnect().catch(() => { });
     process.exit(1);
   }
 };

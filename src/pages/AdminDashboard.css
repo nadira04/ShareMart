@@ -988,3 +988,19 @@
     height: 220px;
   }
 }
+
+.dashboard-sidebar,
+.dashboard-main,
+.dashboard-topbar,
+.dashboard-welcome,
+.sidebar-menu {
+  pointer-events: auto;
+}
+
+.dashboard-sidebar button,
+.dashboard-main button {
+  position: relative;
+  z-index: 2;
+  pointer-events: auto;
+  cursor: pointer;
+}

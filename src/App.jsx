@@ -9,6 +9,7 @@ import Footer from "./components/Footer";
 import AuthModal from "./components/AuthModal";
 import AdminDashboard from "./pages/AdminDashboard";
 import DynamicDashboard from "./pages/DynamicDashboard";
+import DonorDashboard from "./pages/DonorDashboard";
 import AddProduct from "./pages/AddProduct";
 import Marketplace from "./pages/Marketplace";
 
@@ -84,6 +85,21 @@ function App() {
       ) : showDashboard &&
         user?.permissions?.includes("role.view") ? (
         <AdminDashboard />
+
+      ) : showDashboard &&
+        user?.roles?.some((role) =>
+          (typeof role === "string" ? role : role.name)
+            ?.toLowerCase()
+            .includes("donor")
+        ) ? (
+        <DonorDashboard
+          onAddProduct={() => {
+            setShowDashboard(false);
+            setShowMarketplace(false);
+            setShowAddProduct(true);
+          }}
+          onLogout={handleLogout}
+        />
       ) : showDashboard ? (
         <DynamicDashboard
           onAddProduct={() => {
@@ -92,6 +108,7 @@ function App() {
           }}
         />
       ) : (
+
         <>
           <main>
             <Hero />

@@ -10,6 +10,7 @@ const sellerRoutes = require("./routes/sellerRoutes");
 const userRoutes = require("./routes/userRoutes");
 const donorRoutes = require("./routes/donorRoutes");
 const productRoutes = require("./routes/productRoutes");
+const donationRoutes = require("./routes/donationRoutes");
 
 
 const app = express();
@@ -27,6 +28,7 @@ app.use("/api/seller", sellerRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/donor", donorRoutes);
 app.use("/api/products", productRoutes);
+app.use("/api/donations", donationRoutes);
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {

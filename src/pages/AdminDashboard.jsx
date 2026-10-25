@@ -32,6 +32,9 @@ function AdminDashboard() {
 
   const [loadingProducts, setLoadingProducts] = useState(false);
   const [processingProduct, setProcessingProduct] = useState("");
+  const [pendingDonations, setPendingDonations] = useState([]);
+  const [loadingDonations, setLoadingDonations] = useState(false);
+  const [processingDonation, setProcessingDonation] = useState("");
 
   const [showRoleForm, setShowRoleForm] = useState(false);
   const [showPermissionForm, setShowPermissionForm] = useState(false);
@@ -74,6 +77,7 @@ function AdminDashboard() {
     getRoles();
     getPermissions();
     getPendingProducts();
+    getPendingDonations();
   }, []);
 
   const getAdminDashboard = async () => {
@@ -123,6 +127,59 @@ function AdminDashboard() {
       setError(err.message);
     } finally {
       setLoadingProducts(false);
+    }
+  };
+
+  const getPendingDonations = async () => {
+    try {
+      setLoadingDonations(true);
+
+      const data = await request(
+        "https://sharemart.onrender.com/api/donations/admin/pending"
+      );
+
+      setPendingDonations(Array.isArray(data) ? data : []);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoadingDonations(false);
+    }
+  };
+
+  const updateDonationStatus = async (donationId, action) => {
+    const actionText = action === "Approved" ? "approve" : "reject";
+
+    if (
+      !window.confirm(
+        `Are you sure you want to ${actionText} this donation?`
+      )
+    ) {
+      return;
+    }
+
+    try {
+      setError("");
+      setMessage("");
+      setProcessingDonation(donationId);
+
+      const data = await request(
+        `https://sharemart.onrender.com/api/donations/admin/${donationId}/review`,
+        {
+          method: "PATCH",
+          body: JSON.stringify({ action }),
+        }
+      );
+
+      setMessage(
+        data.message ||
+        `Donation ${action.toLowerCase()} successfully.`
+      );
+
+      await getPendingDonations();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setProcessingDonation("");
     }
   };
 
@@ -366,9 +423,15 @@ function AdminDashboard() {
     }
   };
 
+
   const handlePermissionChange = (roleId, permissionId) => {
+    const role = roles.find((item) => item._id === roleId);
+
     setSelectedPermissions((prev) => {
-      const current = prev[roleId] || [];
+      const current =
+        prev[roleId] ||
+        role?.permissions?.map((permission) => permission._id) ||
+        [];
 
       return {
         ...prev,
@@ -378,6 +441,7 @@ function AdminDashboard() {
       };
     });
   };
+
 
   const updateRolePermissions = async (roleId, permissionIds) => {
     try {
@@ -391,13 +455,14 @@ function AdminDashboard() {
 
       setMessage("Permissions updated successfully.");
 
+
       await getRoles();
 
-      setSelectedPermissions((prev) => {
-        const updated = { ...prev };
-        delete updated[roleId];
-        return updated;
-      });
+      setSelectedPermissions((prev) => ({
+        ...prev,
+        [roleId]: permissionIds,
+      }));
+
     } catch (err) {
       setError(err.message);
     }
@@ -440,9 +505,10 @@ function AdminDashboard() {
     localStorage.removeItem("user");
     window.location.reload();
   };
-
-  const normalUsers = users.filter((user) =>
-    user.roles?.some((role) => role.name === "user")
+  const normalUsers = users.filter(
+    (user) =>
+      !user.roles?.length ||
+      user.roles.some((role) => role.name === "user")
   );
 
   const sellers = users.filter((user) =>
@@ -453,6 +519,7 @@ function AdminDashboard() {
     user.roles?.some((role) => role.name === "donor")
   );
 
+
   const showSection = (section) => {
     setActiveSection(section);
     setMessage("");
@@ -461,7 +528,12 @@ function AdminDashboard() {
     if (section === "pending-products") {
       getPendingProducts();
     }
+
+    if (section === "pending-donations") {
+      getPendingDonations();
+    }
   };
+
 
   const renderUserRow = (user) => (
     <div key={user._id} className="user-row">
@@ -581,6 +653,17 @@ function AdminDashboard() {
             <ClipboardCheck size={20} />
             {sidebarOpen && (
               <span>Pending Products ({pendingProducts.length})</span>
+            )}
+          </button>
+
+          <button
+            className={`sidebar-item ${activeSection === "pending-donations" ? "active" : ""
+              }`}
+            onClick={() => showSection("pending-donations")}
+          >
+            <Heart size={20} />
+            {sidebarOpen && (
+              <span>Pending Donations ({pendingDonations.length})</span>
             )}
           </button>
 
@@ -829,6 +912,111 @@ function AdminDashboard() {
             )}
           </div>
         )}
+
+        {activeSection === "pending-donations" && (
+          <div className="dashboard-section">
+            <div className="section-header">
+              <div>
+                <h2>Pending Donation Requests</h2>
+                <p>Review donations submitted by donors before publishing.</p>
+              </div>
+
+              <button onClick={getPendingDonations}>
+                <RefreshCw size={15} />
+                Refresh
+              </button>
+            </div>
+
+            {loadingDonations ? (
+              <div className="empty-dashboard">
+                <p>Loading pending donations...</p>
+              </div>
+            ) : pendingDonations.length === 0 ? (
+              <div className="empty-dashboard">
+                <Heart size={40} />
+                <h3>No pending donations</h3>
+                <p>New donor submissions will appear here.</p>
+              </div>
+            ) : (
+              <div className="pending-products-list">
+                {pendingDonations.map((donation) => (
+                  <div className="pending-product-card" key={donation._id}>
+                    {donation.image ? (
+                      <img
+                        className="pending-product-image"
+                        src={donation.image}
+                        alt={donation.title}
+                      />
+                    ) : (
+                      <div className="pending-product-no-image">
+                        No Image
+                      </div>
+                    )}
+
+                    <div className="pending-product-info">
+                      <h3>{donation.title}</h3>
+                      <p>{donation.description}</p>
+                      <p>
+                        <strong>Category:</strong> {donation.category}
+                      </p>
+                      <p>
+                        <strong>Quantity:</strong> {donation.quantity}
+                      </p>
+                      <p>
+                        <strong>Location:</strong> {donation.location}
+                      </p>
+
+                      {donation.category === "Food" && donation.expiryDate && (
+                        <p>
+                          <strong>Expiry Date:</strong>{" "}
+                          {new Date(donation.expiryDate).toLocaleDateString()}
+                        </p>
+                      )}
+
+                      <p>
+                        <strong>Donor:</strong>{" "}
+                        {donation.donor?.name || "Unknown"}
+                      </p>
+                      <p>
+                        <strong>Email:</strong>{" "}
+                        {donation.donor?.email || "Not available"}
+                      </p>
+
+                      <span className="pending-product-status">
+                        Pending Approval
+                      </span>
+
+                      <div className="pending-product-actions">
+                        <button
+                          className="approve-product-btn"
+                          disabled={processingDonation === donation._id}
+                          onClick={() =>
+                            updateDonationStatus(donation._id, "Approved")
+                          }
+                        >
+                          {processingDonation === donation._id
+                            ? "Please wait..."
+                            : "Approve"}
+                        </button>
+
+                        <button
+                          className="reject-product-btn"
+                          disabled={processingDonation === donation._id}
+                          onClick={() =>
+                            updateDonationStatus(donation._id, "Rejected")
+                          }
+                        >
+                          Reject
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
 
         {activeSection === "users" && (
           <div className="dashboard-section">
