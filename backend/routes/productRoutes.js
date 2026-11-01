@@ -8,8 +8,12 @@ const upload = require("../middleware/uploadMiddleware");
 
 const {
     createProduct,
+    createDiscountProduct,
     getProducts,
+    getDiscountProducts,
+    getSellerDiscountHistory,
 } = require("../controllers/productController");
+
 
 router.post(
     "/",
@@ -17,6 +21,24 @@ router.post(
     permissionMiddleware("product.create"),
     upload.single("image"),
     createProduct
+);
+
+router.post(
+    "/discount",
+    authMiddleware,
+    permissionMiddleware("discount.create"),
+    upload.single("image"),
+    createDiscountProduct
+);
+
+router.get(
+    "/discount",
+    getDiscountProducts
+);
+router.get(
+    "/my-discounts",
+    authMiddleware,
+    getSellerDiscountHistory
 );
 
 router.get(

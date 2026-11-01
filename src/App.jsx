@@ -8,11 +8,15 @@ import Categories from "./components/Categories";
 import HowItWorks from "./components/HowItWorks";
 import Footer from "./components/Footer";
 import AuthModal from "./components/AuthModal";
+
 import AdminDashboard from "./pages/AdminDashboard";
 import DynamicDashboard from "./pages/DynamicDashboard";
 import DonorDashboard from "./pages/DonorDashboard";
+
 import AddProduct from "./pages/AddProduct";
+import AddDiscountProduct from "./pages/AddDiscountProduct";
 import Marketplace from "./pages/Marketplace";
+
 import AddDonation from "./pages/AddDonation";
 import DonationPage from "./pages/DonationPage";
 import MyRequests from "./pages/MyRequests";
@@ -26,6 +30,7 @@ function App() {
 
   const [showDashboard, setShowDashboard] = useState(false);
   const [showAddProduct, setShowAddProduct] = useState(false);
+  const [showAddDiscountProduct, setShowAddDiscountProduct] = useState(false);
   const [showMarketplace, setShowMarketplace] = useState(false);
   const [showAddDonation, setShowAddDonation] = useState(false);
   const [showDonationPage, setShowDonationPage] = useState(false);
@@ -56,6 +61,7 @@ function App() {
     setIsLoggedIn(false);
     setShowDashboard(false);
     setShowAddProduct(false);
+    setShowAddDiscountProduct(false);
     setShowAddDonation(false);
     setShowMarketplace(false);
     setShowDonationPage(false);
@@ -72,8 +78,9 @@ function App() {
     console.error("Could not read saved user:", error);
   }
 
-  const goHome = () => {
+  const resetPages = () => {
     setShowAddProduct(false);
+    setShowAddDiscountProduct(false);
     setShowAddDonation(false);
     setShowMarketplace(false);
     setShowDonationPage(false);
@@ -81,31 +88,33 @@ function App() {
     setShowDashboard(false);
   };
 
+  const goHome = () => {
+    resetPages();
+  };
+
   const goToDashboard = () => {
-    setShowAddProduct(false);
-    setShowAddDonation(false);
-    setShowMarketplace(false);
-    setShowDonationPage(false);
-    setShowMyRequests(false);
+    resetPages();
     setShowDashboard(true);
   };
 
   const goToDonations = () => {
-    setShowAddProduct(false);
-    setShowAddDonation(false);
-    setShowMarketplace(false);
-    setShowMyRequests(false);
-    setShowDashboard(false);
+    resetPages();
     setShowDonationPage(true);
   };
 
   const goToMyRequests = () => {
-    setShowAddProduct(false);
-    setShowAddDonation(false);
-    setShowMarketplace(false);
-    setShowDonationPage(false);
-    setShowDashboard(false);
+    resetPages();
     setShowMyRequests(true);
+  };
+
+  const goToMarketplace = () => {
+    resetPages();
+    setShowMarketplace(true);
+  };
+
+  const goToAddDiscountProduct = () => {
+    resetPages();
+    setShowAddDiscountProduct(true);
   };
 
   return (
@@ -116,14 +125,7 @@ function App() {
         onLogout={handleLogout}
         onDashboardClick={goToDashboard}
         onHomeClick={goHome}
-        onMarketplaceClick={() => {
-          setShowAddProduct(false);
-          setShowAddDonation(false);
-          setShowDashboard(false);
-          setShowDonationPage(false);
-          setShowMyRequests(false);
-          setShowMarketplace(true);
-        }}
+        onMarketplaceClick={goToMarketplace}
         onDonatedItemClick={goToDonations}
       />
 
@@ -138,6 +140,8 @@ function App() {
         />
       ) : showAddProduct ? (
         <AddProduct />
+      ) : showAddDiscountProduct ? (
+        <AddDiscountProduct onBack={goToDashboard} />
       ) : showMarketplace ? (
         <Marketplace />
       ) : showDashboard && user?.permissions?.includes("role.view") ? (
@@ -150,9 +154,7 @@ function App() {
         ) ? (
         <DonorDashboard
           onAddProduct={() => {
-            setShowDashboard(false);
-            setShowMarketplace(false);
-            setShowAddProduct(false);
+            resetPages();
             setShowAddDonation(true);
           }}
           onLogout={handleLogout}
@@ -160,19 +162,14 @@ function App() {
       ) : showDashboard ? (
         <DynamicDashboard
           onAddProduct={() => {
-            setShowDashboard(false);
-            setShowMarketplace(false);
-            setShowDonationPage(false);
-            setShowMyRequests(false);
+            resetPages();
             setShowAddProduct(true);
           }}
+          onAddDiscountProduct={goToAddDiscountProduct}
           onViewDonations={goToDonations}
           onViewMyRequests={goToMyRequests}
           onCreateDonation={() => {
-            setShowDashboard(false);
-            setShowMarketplace(false);
-            setShowDonationPage(false);
-            setShowMyRequests(false);
+            resetPages();
             setShowAddDonation(true);
           }}
         />
@@ -184,6 +181,7 @@ function App() {
             <Categories />
             <HowItWorks />
           </main>
+
           <Footer />
         </>
       )}
@@ -208,6 +206,7 @@ function App() {
           <span className="toast-icon">
             {toastType === "success" ? "✓" : "×"}
           </span>
+
           <span>{toastMessage}</span>
         </div>
       )}

@@ -1,3 +1,4 @@
+
 const mongoose = require("mongoose");
 
 const productSchema = new mongoose.Schema(
@@ -37,6 +38,25 @@ const productSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
             required: true,
+        },
+        isDiscount: {
+            type: Boolean,
+            default: false,
+        },
+        discountPercentage: {
+            type: Number,
+            min: 1,
+            max: 99,
+            default: null,
+        },
+        discountPrice: {
+            type: Number,
+            min: 0,
+            default: null,
+        },
+        expiryDate: {
+            type: Date,
+            default: null,
         },
         status: {
             type: String,

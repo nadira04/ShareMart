@@ -907,3 +907,58 @@ a {
     font-size: 28px;
   }
 }
+
+.create-item-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 450px;
+}
+
+.create-item-selector label {
+  font-weight: 600;
+  color: #333;
+}
+
+.create-item-selector select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 15px;
+  background: white;
+}
+
+.create-item-selector button {
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background: #2f7d3c;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.create-item-selector button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.discount-preview {
+  margin: 20px 0;
+  padding: 18px;
+  border: 1px solid #2f7d3c;
+  border-radius: 10px;
+  background: #f0f8f1;
+}
+
+.discount-preview h3 {
+  color: #2f7d3c;
+  margin-bottom: 12px;
+}
+
+.discount-preview h2 {
+  color: #2f7d3c;
+  margin-top: 10px;
+}

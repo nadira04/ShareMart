@@ -6,16 +6,20 @@ import {
     Heart,
     Plus,
     Package,
-    ClipboardList
+    ClipboardList,
+    Tag
 } from "lucide-react";
 
 function DynamicDashboard({
     onAddProduct,
+    onAddDiscountProduct,
     onViewDonations,
     onViewMyRequests,
     onCreateDonation
 }) {
     const [user, setUser] = useState(null);
+    const [selectedType, setSelectedType] = useState("");
+    const [showCreateOptions, setShowCreateOptions] = useState(false);
 
     useEffect(() => {
         try {
@@ -43,8 +47,29 @@ function DynamicDashboard({
 
     const canViewProducts = permissions.includes("product.view");
     const canCreateProducts = permissions.includes("product.create");
+    const canCreateDiscounts = permissions.includes("discount.create");
     const canViewDonations = permissions.includes("donation.view");
     const canCreateDonations = permissions.includes("donation.create");
+
+    const canCreateItems =
+        canCreateProducts || canCreateDiscounts || canCreateDonations;
+
+    const handleContinue = () => {
+        if (selectedType === "sell" && canCreateProducts) {
+            onAddProduct?.();
+        }
+
+        if (selectedType === "discount" && canCreateDiscounts) {
+            onAddDiscountProduct?.();
+        }
+
+        if (selectedType === "donate" && canCreateDonations) {
+            onCreateDonation?.();
+        }
+
+        setSelectedType("");
+        setShowCreateOptions(false);
+    };
 
     return (
         <div className="dashboard-container">
@@ -113,6 +138,18 @@ function DynamicDashboard({
                         </div>
                     )}
 
+                    {canCreateDiscounts && (
+                        <div className="dashboard-card">
+                            <div className="card-icon">
+                                <Tag size={24} />
+                            </div>
+                            <div>
+                                <p>Discount Access</p>
+                                <h3>Can Create</h3>
+                            </div>
+                        </div>
+                    )}
+
                     {canCreateDonations && (
                         <div className="dashboard-card">
                             <div className="card-icon">
@@ -138,7 +175,7 @@ function DynamicDashboard({
                     )}
                 </div>
 
-                {!canViewProducts && !canViewDonations && !isNGO && (
+                {!canViewProducts && !canViewDonations && !isNGO && !canCreateItems && (
                     <div className="empty-dashboard">
                         <LayoutDashboard size={40} />
                         <h3>No dashboard features available</h3>
@@ -146,6 +183,84 @@ function DynamicDashboard({
                             Your account does not have any dashboard feature
                             permissions yet.
                         </p>
+                    </div>
+                )}
+
+                {canCreateItems && (
+                    <div className="dashboard-section">
+                        <div className="section-header">
+                            <div>
+                                <h2>Create Something New</h2>
+                                <p>
+                                    Choose what you want to sell, discount or donate.
+                                </p>
+                            </div>
+                        </div>
+
+                        {!showCreateOptions ? (
+                            <div className="overview-grid">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowCreateOptions(true)}
+                                >
+                                    <Plus size={25} />
+                                    <strong>Add New Item</strong>
+                                    <span>Choose your product type</span>
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="overview-grid">
+                                <div className="create-item-selector">
+                                    <label htmlFor="productType">
+                                        What would you like to do?
+                                    </label>
+
+                                    <select
+                                        id="productType"
+                                        value={selectedType}
+                                        onChange={(e) => setSelectedType(e.target.value)}
+                                    >
+                                        <option value="">Select an option</option>
+
+                                        {canCreateProducts && (
+                                            <option value="sell">
+                                                Sell a Product
+                                            </option>
+                                        )}
+
+                                        {canCreateDiscounts && (
+                                            <option value="discount">
+                                                Discount Product
+                                            </option>
+                                        )}
+
+                                        {canCreateDonations && (
+                                            <option value="donate">
+                                                Donate a Product
+                                            </option>
+                                        )}
+                                    </select>
+
+                                    <button
+                                        type="button"
+                                        disabled={!selectedType}
+                                        onClick={handleContinue}
+                                    >
+                                        Continue
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setShowCreateOptions(false);
+                                            setSelectedType("");
+                                        }}
+                                    >
+                                        Cancel
+                                    </button>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 )}
 
@@ -166,14 +281,6 @@ function DynamicDashboard({
                                 <strong>View Products</strong>
                                 <span>Browse marketplace products</span>
                             </button>
-
-                            {canCreateProducts && (
-                                <button type="button" onClick={onAddProduct}>
-                                    <Plus size={25} />
-                                    <strong>Add Product</strong>
-                                    <span>Create a new product</span>
-                                </button>
-                            )}
                         </div>
                     </div>
                 )}
@@ -195,14 +302,6 @@ function DynamicDashboard({
                                 <strong>View Donations</strong>
                                 <span>Browse available donations</span>
                             </button>
-
-                            {canCreateDonations && (
-                                <button type="button" onClick={onCreateDonation}>
-                                    <Plus size={25} />
-                                    <strong>Create Donation</strong>
-                                    <span>Create a new donation</span>
-                                </button>
-                            )}
                         </div>
                     </div>
                 )}
