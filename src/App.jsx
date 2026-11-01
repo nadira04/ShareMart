@@ -16,6 +16,7 @@ import DonorDashboard from "./pages/DonorDashboard";
 import AddProduct from "./pages/AddProduct";
 import AddDiscountProduct from "./pages/AddDiscountProduct";
 import Marketplace from "./pages/Marketplace";
+import DiscountPage from "./pages/DiscountPage";
 
 import AddDonation from "./pages/AddDonation";
 import DonationPage from "./pages/DonationPage";
@@ -32,6 +33,7 @@ function App() {
   const [showAddProduct, setShowAddProduct] = useState(false);
   const [showAddDiscountProduct, setShowAddDiscountProduct] = useState(false);
   const [showMarketplace, setShowMarketplace] = useState(false);
+  const [showDiscountPage, setShowDiscountPage] = useState(false);
   const [showAddDonation, setShowAddDonation] = useState(false);
   const [showDonationPage, setShowDonationPage] = useState(false);
   const [showMyRequests, setShowMyRequests] = useState(false);
@@ -59,13 +61,7 @@ function App() {
     localStorage.removeItem("user");
 
     setIsLoggedIn(false);
-    setShowDashboard(false);
-    setShowAddProduct(false);
-    setShowAddDiscountProduct(false);
-    setShowAddDonation(false);
-    setShowMarketplace(false);
-    setShowDonationPage(false);
-    setShowMyRequests(false);
+    resetPages();
 
     showToast("Logout successful!", "success");
   };
@@ -79,13 +75,14 @@ function App() {
   }
 
   const resetPages = () => {
+    setShowDashboard(false);
     setShowAddProduct(false);
     setShowAddDiscountProduct(false);
-    setShowAddDonation(false);
     setShowMarketplace(false);
+    setShowDiscountPage(false);
+    setShowAddDonation(false);
     setShowDonationPage(false);
     setShowMyRequests(false);
-    setShowDashboard(false);
   };
 
   const goHome = () => {
@@ -112,6 +109,11 @@ function App() {
     setShowMarketplace(true);
   };
 
+  const goToDiscountPage = () => {
+    resetPages();
+    setShowDiscountPage(true);
+  };
+
   const goToAddDiscountProduct = () => {
     resetPages();
     setShowAddDiscountProduct(true);
@@ -126,6 +128,7 @@ function App() {
         onDashboardClick={goToDashboard}
         onHomeClick={goHome}
         onMarketplaceClick={goToMarketplace}
+        onDiscountClick={goToDiscountPage}
         onDonatedItemClick={goToDonations}
       />
 
@@ -142,6 +145,8 @@ function App() {
         <AddProduct />
       ) : showAddDiscountProduct ? (
         <AddDiscountProduct onBack={goToDashboard} />
+      ) : showDiscountPage ? (
+        <DiscountPage />
       ) : showMarketplace ? (
         <Marketplace />
       ) : showDashboard && user?.permissions?.includes("role.view") ? (

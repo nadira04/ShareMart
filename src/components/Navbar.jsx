@@ -14,25 +14,31 @@ function Navbar({
   onHomeClick,
   onMarketplaceClick,
   onDonatedItemClick,
+  onDiscountClick,
 }) {
-  const user = JSON.parse(localStorage.getItem("user"));
+  let user = null;
+
+  try {
+    user = JSON.parse(localStorage.getItem("user"));
+  } catch (error) {
+    console.error("Could not read saved user:", error);
+  }
 
   return (
     <nav className="navbar">
       <div className="container nav-content">
-        {/* Logo */}
         <div
           className="logo"
           onClick={onHomeClick}
           style={{ cursor: "pointer" }}
         >
           <div className="logo-icon">♻</div>
+
           <span>
             Share<span>Mart</span>
           </span>
         </div>
 
-        {/* Navigation Links */}
         <div className="nav-links">
           <a
             className="active"
@@ -49,7 +55,10 @@ function Navbar({
             Donated Item
           </a>
 
-          <a style={{ cursor: "pointer" }}>
+          <a
+            onClick={onDiscountClick}
+            style={{ cursor: "pointer" }}
+          >
             Discount Item
           </a>
 
@@ -78,22 +87,18 @@ function Navbar({
           )}
         </div>
 
-        {/* Right Side Actions */}
         <div className="nav-actions">
-          {/* Location */}
           <button className="location-btn">
             <MapPin size={16} />
             Dhaka, Bangladesh
             <ChevronDown size={15} />
           </button>
 
-          {/* Cart */}
           <button className="cart-btn">
             <ShoppingCart size={21} />
             <span className="cart-number">2</span>
           </button>
 
-          {/* Login / Logout */}
           {!isLoggedIn ? (
             <button
               className="login-btn"
