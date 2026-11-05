@@ -74,6 +74,19 @@ function App() {
     console.error("Could not read saved user:", error);
   }
 
+  // Active Navbar Page
+  const activePage = showMyRequests
+    ? "donations"
+    : showDonationPage || showAddDonation
+      ? "donations"
+      : showDiscountPage
+        ? "discount"
+        : showMarketplace
+          ? "marketplace"
+          : showDashboard || showAddProduct || showAddDiscountProduct
+            ? "dashboard"
+            : "home";
+
   const resetPages = () => {
     setShowDashboard(false);
     setShowAddProduct(false);
@@ -121,7 +134,9 @@ function App() {
 
   return (
     <div className="app">
+
       <Navbar
+        activePage={activePage}
         onLoginClick={() => setAuthMode("login")}
         isLoggedIn={isLoggedIn}
         onLogout={handleLogout}
@@ -134,23 +149,31 @@ function App() {
 
       {showMyRequests ? (
         <MyRequests onBack={goToDashboard} />
+
       ) : showDonationPage ? (
         <DonationPage />
+
       ) : showAddDonation ? (
         <AddDonation
           onBack={goToDashboard}
           onSuccess={goToDashboard}
         />
+
       ) : showAddProduct ? (
         <AddProduct />
+
       ) : showAddDiscountProduct ? (
         <AddDiscountProduct onBack={goToDashboard} />
+
       ) : showDiscountPage ? (
         <DiscountPage />
+
       ) : showMarketplace ? (
         <Marketplace />
+
       ) : showDashboard && user?.permissions?.includes("role.view") ? (
         <AdminDashboard />
+
       ) : showDashboard &&
         user?.roles?.some((role) =>
           (typeof role === "string" ? role : role.name)
@@ -164,6 +187,7 @@ function App() {
           }}
           onLogout={handleLogout}
         />
+
       ) : showDashboard ? (
         <DynamicDashboard
           onAddProduct={() => {
@@ -178,18 +202,18 @@ function App() {
             setShowAddDonation(true);
           }}
         />
-      ) : (
-        <>
-          <main>
-            <Hero />
-            <SearchSection />
-            <Categories />
-            <HowItWorks />
-          </main>
 
-          <Footer />
-        </>
+      ) : (
+        <main>
+          <Hero />
+          <SearchSection />
+          <Categories />
+          <HowItWorks />
+        </main>
       )}
+
+      {/* Footer for All Pages */}
+      <Footer />
 
       {authMode && (
         <AuthModal
@@ -215,6 +239,7 @@ function App() {
           <span>{toastMessage}</span>
         </div>
       )}
+
     </div>
   );
 }

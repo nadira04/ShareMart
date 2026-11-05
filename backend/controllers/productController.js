@@ -181,7 +181,7 @@ const getProducts = async (req, res) => {
         const products = await productModel
             .find({
                 status: "approved",
-                isDiscount: false,
+                isDiscount: { $ne: true },
             })
             .populate("seller", "name email")
             .sort({ createdAt: -1 });

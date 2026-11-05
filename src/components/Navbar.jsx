@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 
 function Navbar({
+  activePage,
   onLoginClick,
   isLoggedIn,
   onLogout,
@@ -41,7 +42,7 @@ function Navbar({
 
         <div className="nav-links">
           <a
-            className="active"
+            className={activePage === "home" ? "active" : ""}
             onClick={onHomeClick}
             style={{ cursor: "pointer" }}
           >
@@ -49,6 +50,7 @@ function Navbar({
           </a>
 
           <a
+            className={activePage === "donations" ? "active" : ""}
             onClick={onDonatedItemClick}
             style={{ cursor: "pointer" }}
           >
@@ -56,6 +58,7 @@ function Navbar({
           </a>
 
           <a
+            className={activePage === "discount" ? "active" : ""}
             onClick={onDiscountClick}
             style={{ cursor: "pointer" }}
           >
@@ -63,6 +66,7 @@ function Navbar({
           </a>
 
           <a
+            className={activePage === "marketplace" ? "active" : ""}
             onClick={onMarketplaceClick}
             style={{ cursor: "pointer" }}
           >
@@ -79,6 +83,7 @@ function Navbar({
 
           {isLoggedIn && (
             <a
+              className={activePage === "dashboard" ? "active" : ""}
               onClick={onDashboardClick}
               style={{ cursor: "pointer" }}
             >
