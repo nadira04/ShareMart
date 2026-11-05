@@ -200,23 +200,41 @@ const getProducts = async (req, res) => {
 
 const getDiscountProducts = async (req, res) => {
     try {
-        const products = await productModel
-            .find({
-                status: "approved",
-                isDiscount: true,
-                expiryDate: { $gt: new Date() },
-            })
-            .populate("seller", "name email")
-            .sort({ expiryDate: 1 });
+        console.log("DATABASE:", productModel.db.name);
+        console.log("COLLECTION:", productModel.collection.name);
+
+        const total = await productModel.countDocuments({
+            isDiscount: true
+        });
+
+        const approved = await productModel.countDocuments({
+            isDiscount: true,
+            status: "approved"
+        });
+
+        const products = await productModel.find({
+            isDiscount: true,
+            status: "approved"
+        });
+
+        console.log("TOTAL DISCOUNT:", total);
+        console.log("APPROVED DISCOUNT:", approved);
+        console.log("FOUND PRODUCTS:", products.length);
 
         res.status(200).json({
-            products,
+            database: productModel.db.name,
+            collection: productModel.collection.name,
+            total,
+            approved,
+            products
         });
+
     } catch (error) {
         console.log("DISCOUNT PRODUCT ERROR:", error);
 
         res.status(500).json({
             message: "Failed to load discount products",
+            error: error.message
         });
     }
 };
