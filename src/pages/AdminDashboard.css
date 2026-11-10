@@ -1004,3 +1004,251 @@
   pointer-events: auto;
   cursor: pointer;
 }
+
+/* Donation Page */
+
+.donation-page {
+  min-height: 70vh;
+  padding: 32px 5%;
+}
+
+.donation-page-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Heading */
+
+.donation-heading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  margin-bottom: 32px;
+}
+
+.donation-heading h1,
+.donation-heading p {
+  margin: 0;
+}
+
+/* Search */
+
+.donation-search-wrap {
+  display: flex;
+  margin-bottom: 24px;
+}
+
+.donation-search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 220px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 0 12px;
+  background: #fff;
+}
+
+.donation-search-box input {
+  width: 100%;
+  padding: 12px 0;
+  border: none;
+  outline: none;
+  background: transparent;
+}
+
+/* Categories */
+
+.donation-categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 28px;
+}
+
+.donation-categories button {
+  padding: 10px 18px;
+  border: 1px solid #2f7d3c;
+  border-radius: 24px;
+  background: #fff;
+  color: #2f7d3c;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.donation-categories button.active,
+.donation-categories button:hover {
+  background: #2f7d3c;
+  color: #fff;
+}
+
+/* Product Grid */
+
+.donation-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 22px;
+  align-items: stretch;
+}
+
+/* Product Card */
+
+.donation-card {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.donation-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 7px 18px rgba(0, 0, 0, 0.09);
+}
+
+.donation-category-badge {
+  display: inline-block;
+  align-self: flex-start;
+  margin-bottom: 14px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  background: #e8f5e9;
+  color: #2f7d3c;
+  font-size: 13px;
+}
+
+.donation-card h3 {
+  margin: 0 0 10px;
+  overflow-wrap: anywhere;
+}
+
+.donation-description {
+  flex-grow: 1;
+  margin: 0 0 14px;
+  color: #666;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.donation-detail {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 0 0 10px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.donation-detail svg {
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+
+.donation-location {
+  margin-bottom: 16px;
+}
+
+/* Request Button */
+
+.donation-request-button {
+  width: 100%;
+  margin-top: auto;
+  padding: 11px;
+  border: none;
+  border-radius: 8px;
+  background: #2f7d3c;
+  color: #fff;
+  cursor: pointer;
+}
+
+.donation-request-button:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+/* Messages */
+
+.donation-message {
+  padding: 12px;
+  margin: 0 0 20px;
+  border-radius: 8px;
+  background: #e8f5e9;
+  color: #246b32;
+}
+
+.donation-status,
+.donation-error,
+.donation-empty {
+  padding: 40px 16px;
+  text-align: center;
+}
+
+.donation-error {
+  color: red;
+}
+
+.donation-empty svg {
+  margin-bottom: 12px;
+}
+
+/* Tablet: 3 Products */
+
+@media (max-width: 1024px) {
+  .donation-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Mobile: 2 Products */
+
+@media (max-width: 768px) {
+  .donation-page {
+    padding: 28px 4%;
+  }
+
+  .donation-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .donation-card {
+    padding: 15px;
+  }
+}
+
+/* Small Mobile */
+
+@media (max-width: 480px) {
+  .donation-grid {
+    gap: 10px;
+  }
+
+  .donation-card {
+    padding: 12px;
+  }
+
+  .donation-card h3 {
+    font-size: 15px;
+  }
+
+  .donation-description,
+  .donation-detail {
+    font-size: 13px;
+  }
+
+  .donation-categories {
+    gap: 8px;
+  }
+
+  .donation-categories button {
+    padding: 8px 13px;
+    font-size: 13px;
+  }
+}
