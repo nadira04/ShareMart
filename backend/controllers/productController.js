@@ -183,7 +183,7 @@ const createDiscountProduct = async (req, res) => {
     }
 };
 
-
+console.log("NEW GET PRODUCTS CONTROLLER IS RUNNING");
 // GET ALL APPROVED PRODUCTS
 
 const getProducts = async (req, res) => {
