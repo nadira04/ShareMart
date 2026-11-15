@@ -187,89 +187,68 @@ console.log("NEW GET PRODUCTS CONTROLLER IS RUNNING");
 // GET ALL APPROVED PRODUCTS
 
 
+
 const getProducts = async (req, res) => {
     try {
-        const sellerId = new mongoose.Types.ObjectId(
-            "6ae771bf8ea8cdc67151385b"
-        );
+        // Fetch approved products directly from MongoDB
+        const products = await productModel.collection
+            .find({
+                status: "approved",
+                isDiscount: { $ne: true },
+            })
+            .sort({ createdAt: -1 })
+            .toArray();
 
-        const productId = new mongoose.Types.ObjectId(
-            "6aecd4433bc1d2173a7beddc"
-        );
-
-        // Check model connections
-        const sameConnection = productModel.db === userModel.db;
-
-        // Read raw documents directly from MongoDB
-        const rawUser = await userModel.collection.findOne({
-            _id: sellerId,
-        });
-
-        const rawProduct = await productModel.collection.findOne({
-            _id: productId,
-        });
-
-        // Find user using Mongoose
-        const mongooseUser = await userModel.findById(sellerId)
-            .select("name email phone");
-
-        // Check seller field type
-        const sellerFieldType = rawProduct?.seller?.constructor?.name;
-
-        // Test population using explicit model
-        const populatedProduct = await productModel
-            .findById(productId)
-            .populate({
-                path: "seller",
-                model: userModel,
-                select: "name email phone",
-            });
-
-        // Get products without populate
-        const products = await productModel.find({
-            status: "approved",
-            isDiscount: { $ne: true },
-        }).sort({ createdAt: -1 });
-
-        // Manually attach seller information
+        // Attach seller information manually
         const finalProducts = await Promise.all(
             products.map(async (product) => {
-                const seller = await userModel
-                    .findById(product.seller)
-                    .select("name email phone");
+                let seller = null;
+
+                if (product.seller) {
+                    const sellerData = await userModel.collection.findOne(
+                        {
+                            _id: product.seller,
+                        },
+                        {
+                            projection: {
+                                name: 1,
+                                email: 1,
+                                phone: 1,
+                            },
+                        }
+                    );
+
+                    if (sellerData) {
+                        seller = {
+                            _id: sellerData._id,
+                            name: sellerData.name,
+                            email: sellerData.email,
+                            phone: sellerData.phone,
+                        };
+                    }
+                }
 
                 return {
-                    ...product.toObject(),
+                    ...product,
                     seller,
                 };
             })
         );
 
         res.status(200).json({
-            debug: {
-                sameConnection,
-                productDatabase: productModel.db.name,
-                userDatabase: userModel.db.name,
-                productCollection: productModel.collection.name,
-                userCollection: userModel.collection.name,
-                rawUser,
-                rawProduct,
-                sellerFieldType,
-                mongooseUser,
-                populatedSeller: populatedProduct?.seller,
-            },
             products: finalProducts,
         });
 
     } catch (error) {
-        console.log("PRODUCT DEBUG ERROR:", error);
+        console.log("GET PRODUCTS ERROR:", error);
 
         res.status(500).json({
-            message: "Debug failed",
+            message: "Failed to load products",
             error: error.message,
         });
     }
 };
+
 
 
 // GET DISCOUNT PRODUCTS
