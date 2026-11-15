@@ -189,27 +189,83 @@ console.log("NEW GET PRODUCTS CONTROLLER IS RUNNING");
 
 const getProducts = async (req, res) => {
     try {
-        const products = await productModel
-            .find({
-                status: "approved",
-                isDiscount: { $ne: true },
-            })
+        const sellerId = new mongoose.Types.ObjectId(
+            "6ae771bf8ea8cdc67151385b"
+        );
+
+        const productId = new mongoose.Types.ObjectId(
+            "6aecd4433bc1d2173a7beddc"
+        );
+
+        // Check model connections
+        const sameConnection = productModel.db === userModel.db;
+
+        // Read raw documents directly from MongoDB
+        const rawUser = await userModel.collection.findOne({
+            _id: sellerId,
+        });
+
+        const rawProduct = await productModel.collection.findOne({
+            _id: productId,
+        });
+
+        // Find user using Mongoose
+        const mongooseUser = await userModel.findById(sellerId)
+            .select("name email phone");
+
+        // Check seller field type
+        const sellerFieldType = rawProduct?.seller?.constructor?.name;
+
+        // Test population using explicit model
+        const populatedProduct = await productModel
+            .findById(productId)
             .populate({
                 path: "seller",
                 model: userModel,
                 select: "name email phone",
+            });
+
+        // Get products without populate
+        const products = await productModel.find({
+            status: "approved",
+            isDiscount: { $ne: true },
+        }).sort({ createdAt: -1 });
+
+        // Manually attach seller information
+        const finalProducts = await Promise.all(
+            products.map(async (product) => {
+                const seller = await userModel
+                    .findById(product.seller)
+                    .select("name email phone");
+
+                return {
+                    ...product.toObject(),
+                    seller,
+                };
             })
-            .sort({ createdAt: -1 });
+        );
 
         res.status(200).json({
-            products,
+            debug: {
+                sameConnection,
+                productDatabase: productModel.db.name,
+                userDatabase: userModel.db.name,
+                productCollection: productModel.collection.name,
+                userCollection: userModel.collection.name,
+                rawUser,
+                rawProduct,
+                sellerFieldType,
+                mongooseUser,
+                populatedSeller: populatedProduct?.seller,
+            },
+            products: finalProducts,
         });
 
     } catch (error) {
-        console.log("PRODUCT ERROR:", error);
+        console.log("PRODUCT DEBUG ERROR:", error);
 
         res.status(500).json({
-            message: "Failed to load products",
+            message: "Debug failed",
             error: error.message,
         });
     }
