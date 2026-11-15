@@ -1,4 +1,5 @@
-function Categories() {
+
+function Categories({ onCategorySelect, onViewAll, onDonateClick, onDiscountClick }) {
 
   const categories = [
     {
@@ -7,6 +8,7 @@ function Categories() {
       count: "125+ donations today",
       image:
         "https://images.unsplash.com/photo-1593113598332-cd288d649433",
+      action: onDonateClick,
     },
     {
       title: "Discount Food",
@@ -14,6 +16,7 @@ function Categories() {
       count: "320+ offers",
       image:
         "https://images.unsplash.com/photo-1542838132-92c53300491e",
+      action: onDiscountClick,
     },
     {
       title: "Electronics",
@@ -21,6 +24,7 @@ function Categories() {
       count: "450+ items",
       image:
         "https://images.unsplash.com/photo-1498049794561-7780e7231661",
+      action: () => onCategorySelect?.("Electronics"),
     },
     {
       title: "Home & Living",
@@ -28,6 +32,7 @@ function Categories() {
       count: "380+ items",
       image:
         "https://images.unsplash.com/photo-1555041469-a586c61ea9bc",
+      action: () => onCategorySelect?.("Home & Living"),
     },
     {
       title: "Fashion",
@@ -35,6 +40,7 @@ function Categories() {
       count: "520+ items",
       image:
         "https://images.unsplash.com/photo-1445205170230-053b83016050",
+      action: () => onCategorySelect?.("Fashion"),
     },
     {
       title: "Books & Media",
@@ -42,6 +48,7 @@ function Categories() {
       count: "250+ items",
       image:
         "https://images.unsplash.com/photo-1512820790803-83ca734da794",
+      action: () => onCategorySelect?.("Books & Media"),
     },
   ];
 
@@ -57,18 +64,33 @@ function Categories() {
             <h2>Browse Categories</h2>
           </div>
 
-          <button className="view-all">
+          <button
+            className="view-all"
+            type="button"
+            onClick={onViewAll}
+          >
             View all →
           </button>
 
         </div>
 
-
         <div className="categories-grid">
 
           {categories.map((category, index) => (
 
-            <div className="category-card" key={index}>
+            <div
+              className="category-card"
+              key={index}
+              role="button"
+              tabIndex={0}
+              onClick={category.action}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  category.action?.();
+                }
+              }}
+            >
 
               <div className="category-text">
 

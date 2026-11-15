@@ -38,6 +38,9 @@ function App() {
   const [showDonationPage, setShowDonationPage] = useState(false);
   const [showMyRequests, setShowMyRequests] = useState(false);
 
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState("success");
 
@@ -48,6 +51,17 @@ function App() {
     setTimeout(() => {
       setToastMessage("");
     }, 3000);
+  };
+
+  const resetPages = () => {
+    setShowDashboard(false);
+    setShowAddProduct(false);
+    setShowAddDiscountProduct(false);
+    setShowMarketplace(false);
+    setShowDiscountPage(false);
+    setShowAddDonation(false);
+    setShowDonationPage(false);
+    setShowMyRequests(false);
   };
 
   const handleLoginSuccess = () => {
@@ -74,7 +88,6 @@ function App() {
     console.error("Could not read saved user:", error);
   }
 
-  // Active Navbar Page
   const activePage = showMyRequests
     ? "donations"
     : showDonationPage || showAddDonation
@@ -87,19 +100,10 @@ function App() {
             ? "dashboard"
             : "home";
 
-  const resetPages = () => {
-    setShowDashboard(false);
-    setShowAddProduct(false);
-    setShowAddDiscountProduct(false);
-    setShowMarketplace(false);
-    setShowDiscountPage(false);
-    setShowAddDonation(false);
-    setShowDonationPage(false);
-    setShowMyRequests(false);
-  };
-
   const goHome = () => {
     resetPages();
+    setSelectedCategory("");
+    setSearchQuery("");
   };
 
   const goToDashboard = () => {
@@ -112,13 +116,22 @@ function App() {
     setShowDonationPage(true);
   };
 
+  const goToAddDonation = () => {
+    resetPages();
+    setShowAddDonation(true);
+  };
+
   const goToMyRequests = () => {
     resetPages();
     setShowMyRequests(true);
   };
 
-  const goToMarketplace = () => {
+  const goToMarketplace = (category = "", query = "") => {
     resetPages();
+
+    setSelectedCategory(category);
+    setSearchQuery(query);
+
     setShowMarketplace(true);
   };
 
@@ -142,7 +155,7 @@ function App() {
         onLogout={handleLogout}
         onDashboardClick={goToDashboard}
         onHomeClick={goHome}
-        onMarketplaceClick={goToMarketplace}
+        onMarketplaceClick={() => goToMarketplace()}
         onDiscountClick={goToDiscountPage}
         onDonatedItemClick={goToDonations}
       />
@@ -169,7 +182,10 @@ function App() {
         <DiscountPage />
 
       ) : showMarketplace ? (
-        <Marketplace />
+        <Marketplace
+          selectedCategory={selectedCategory}
+          searchQuery={searchQuery}
+        />
 
       ) : showDashboard && user?.permissions?.includes("role.view") ? (
         <AdminDashboard />
@@ -181,10 +197,7 @@ function App() {
             .includes("donor")
         ) ? (
         <DonorDashboard
-          onAddProduct={() => {
-            resetPages();
-            setShowAddDonation(true);
-          }}
+          onAddProduct={goToAddDonation}
           onLogout={handleLogout}
         />
 
@@ -197,22 +210,39 @@ function App() {
           onAddDiscountProduct={goToAddDiscountProduct}
           onViewDonations={goToDonations}
           onViewMyRequests={goToMyRequests}
-          onCreateDonation={() => {
-            resetPages();
-            setShowAddDonation(true);
-          }}
+          onCreateDonation={goToAddDonation}
         />
 
       ) : (
         <main>
-          <Hero />
-          <SearchSection />
-          <Categories />
+
+          <Hero
+            onDonateClick={goToDonations}
+            onMarketplaceClick={() => goToMarketplace()}
+            onDiscountClick={goToDiscountPage}
+          />
+
+          <SearchSection
+            onSearch={(query, category) =>
+              goToMarketplace(category, query)
+            }
+            onMarketplaceClick={() => goToMarketplace()}
+            onDonationClick={goToDonations}
+            onDiscountClick={goToDiscountPage}
+          />
+
+          <Categories
+            onCategorySelect={(category) => goToMarketplace(category)}
+            onViewAll={() => goToMarketplace()}
+            onDonateClick={goToDonations}
+            onDiscountClick={goToDiscountPage}
+          />
+
           <HowItWorks />
+
         </main>
       )}
 
-      {/* Footer for All Pages */}
       <Footer />
 
       {authMode && (

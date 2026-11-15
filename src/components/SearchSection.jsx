@@ -1,3 +1,6 @@
+
+import { useState } from "react";
+
 import {
   Search,
   Grid2X2,
@@ -8,55 +11,96 @@ import {
   ChevronDown,
 } from "lucide-react";
 
-function SearchSection() {
+function SearchSection({
+  onSearch,
+  onMarketplaceClick,
+  onDonationClick,
+  onDiscountClick,
+}) {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+
+    onSearch?.(searchTerm.trim(), selectedCategory);
+  };
+
   return (
     <section className="search-section">
 
       <div className="container search-container">
 
-        <div className="search-main">
+        <form className="search-main" onSubmit={handleSearch}>
 
-          <button className="category-select">
+          <div className="category-select">
             <Grid2X2 size={18} />
-            All Categories
+
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              aria-label="Select category"
+            >
+              <option value="">All Categories</option>
+              <option value="Electronics">Electronics</option>
+              <option value="Home & Living">Home & Living</option>
+              <option value="Fashion">Fashion</option>
+              <option value="Books & Media">Books & Media</option>
+            </select>
+
             <ChevronDown size={16} />
-          </button>
+          </div>
 
           <div className="search-input">
+
             <Search size={20} />
 
             <input
               type="text"
               placeholder="Search for food, items or categories..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
 
-            <button>
+            <button type="submit">
               <Search size={18} />
               Search
             </button>
+
           </div>
 
-        </div>
-
+        </form>
 
         <div className="search-filters">
 
-          <button>
+          <button
+            type="button"
+            onClick={onMarketplaceClick}
+          >
             <MapPin />
             Nearby
           </button>
 
-          <button>
+          <button
+            type="button"
+            onClick={onDonationClick}
+          >
             <Heart />
             Food Donation
           </button>
 
-          <button>
+          <button
+            type="button"
+            onClick={onDiscountClick}
+          >
             <Tag />
             Discount Food
           </button>
 
-          <button>
+          <button
+            type="button"
+            onClick={onMarketplaceClick}
+          >
             <ShoppingBag />
             Marketplace
           </button>

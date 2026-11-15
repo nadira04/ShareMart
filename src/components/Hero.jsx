@@ -1,3 +1,4 @@
+
 import {
   HeartHandshake,
   Percent,
@@ -9,7 +10,11 @@ import {
   MapPin,
 } from "lucide-react";
 
-function Hero() {
+function Hero({
+  onDonateClick,
+  onMarketplaceClick,
+  onDiscountClick,
+}) {
   return (
     <section className="hero-section">
       <div className="container hero-grid">
@@ -31,12 +36,18 @@ function Hero() {
 
           <div className="hero-buttons">
 
-            <button className="primary-btn">
+            <button
+              className="primary-btn"
+              onClick={onDonateClick}
+            >
               <HeartHandshake size={20} />
               Donate Food
             </button>
 
-            <button className="secondary-btn">
+            <button
+              className="secondary-btn"
+              onClick={onMarketplaceClick}
+            >
               <ShoppingBag size={20} />
               Explore Marketplace
             </button>
@@ -116,7 +127,18 @@ function Hero() {
 
         <div className="hero-options">
 
-          <div className="option-card donate-card">
+          <div
+            className="option-card donate-card"
+            role="button"
+            tabIndex={0}
+            onClick={onDonateClick}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                onDonateClick?.();
+              }
+            }}
+          >
 
             <div className="option-icon green">
               <HeartHandshake />
@@ -127,17 +149,33 @@ function Hero() {
               <p>Help NGOs and people in need by donating surplus food.</p>
             </div>
 
-            <div className="option-image">
-            </div>
+            <div className="option-image"></div>
 
-            <button>
+            <button
+              type="button"
+              aria-label="Donate Food"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDonateClick?.();
+              }}
+            >
               <ArrowRight size={18} />
             </button>
 
           </div>
 
-
-          <div className="option-card discount-card">
+          <div
+            className="option-card discount-card"
+            role="button"
+            tabIndex={0}
+            onClick={onDiscountClick}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                onDiscountClick?.();
+              }
+            }}
+          >
 
             <div className="option-icon orange">
               <Percent />
@@ -148,17 +186,33 @@ function Hero() {
               <p>Grab quality food at discount before it expires.</p>
             </div>
 
-            <div className="option-image">
-            </div>
+            <div className="option-image"></div>
 
-            <button>
+            <button
+              type="button"
+              aria-label="Discount Food"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDiscountClick?.();
+              }}
+            >
               <ArrowRight size={18} />
             </button>
 
           </div>
 
-
-          <div className="option-card market-card">
+          <div
+            className="option-card market-card"
+            role="button"
+            tabIndex={0}
+            onClick={onMarketplaceClick}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                onMarketplaceClick?.();
+              }
+            }}
+          >
 
             <div className="option-icon blue">
               <ShoppingBag />
@@ -169,10 +223,16 @@ function Hero() {
               <p>Buy or sell pre-loved items and give them a second life.</p>
             </div>
 
-            <div className="option-image">
-            </div>
+            <div className="option-image"></div>
 
-            <button>
+            <button
+              type="button"
+              aria-label="Explore Marketplace"
+              onClick={(e) => {
+                e.stopPropagation();
+                onMarketplaceClick?.();
+              }}
+            >
               <ArrowRight size={18} />
             </button>
 
