@@ -2,7 +2,7 @@
 const mongoose = require("mongoose");
 const productModel = require("../models/product");
 const cloudinary = require("../config/cloudinary");
-
+const userModel = require("../models/user");
 const uploadProductImage = async (file) => {
     if (!file) return "";
 
@@ -185,34 +185,24 @@ const createDiscountProduct = async (req, res) => {
 
 
 // GET ALL APPROVED PRODUCTS
+
 const getProducts = async (req, res) => {
     try {
         const testId = "6ae771bf8ea8cdc67151385b";
 
-        // Database information
-        console.log("DATABASE:", mongoose.connection.name);
+        // Check database and collection
+        const databaseName = userModel.db.name;
+        const userCollection = userModel.collection.name;
+        const productCollection = productModel.collection.name;
 
-        console.log(
-            "USER COLLECTION:",
-            mongoose.model("User").collection.name
-        );
-
-        // Check seller in User collection
-        const testUser = await mongoose
-            .model("User")
+        // Find seller directly
+        const testUser = await userModel
             .findById(testId)
             .select("name email phone");
 
-        console.log("TEST USER:", testUser);
-
-        // Check product seller ID
+        // Find product
         const testProduct = await productModel.findById(
             "6aecd4433bc1d2173a7beddc"
-        );
-
-        console.log(
-            "PRODUCT SELLER ID:",
-            testProduct?.seller
         );
 
         // Test populate
@@ -220,12 +210,7 @@ const getProducts = async (req, res) => {
             .findById("6aecd4433bc1d2173a7beddc")
             .populate("seller", "name email phone");
 
-        console.log(
-            "POPULATED SELLER:",
-            populatedProduct?.seller
-        );
-
-        // Get all approved products
+        // Get all products
         const products = await productModel
             .find({
                 status: "approved",
@@ -235,6 +220,14 @@ const getProducts = async (req, res) => {
             .sort({ createdAt: -1 });
 
         res.status(200).json({
+            debug: {
+                databaseName,
+                userCollection,
+                productCollection,
+                testUser,
+                productSellerId: testProduct?.seller,
+                populatedSeller: populatedProduct?.seller,
+            },
             products,
         });
 
@@ -247,6 +240,7 @@ const getProducts = async (req, res) => {
         });
     }
 };
+
 
 
 // GET DISCOUNT PRODUCTS
