@@ -186,48 +186,22 @@ const createDiscountProduct = async (req, res) => {
 console.log("NEW GET PRODUCTS CONTROLLER IS RUNNING");
 // GET ALL APPROVED PRODUCTS
 
+
 const getProducts = async (req, res) => {
     try {
-        const testId = "6ae771bf8ea8cdc67151385b";
-
-        // Check database and collection
-        const databaseName = userModel.db.name;
-        const userCollection = userModel.collection.name;
-        const productCollection = productModel.collection.name;
-
-        // Find seller directly
-        const testUser = await userModel
-            .findById(testId)
-            .select("name email phone");
-
-        // Find product
-        const testProduct = await productModel.findById(
-            "6aecd4433bc1d2173a7beddc"
-        );
-
-        // Test populate
-        const populatedProduct = await productModel
-            .findById("6aecd4433bc1d2173a7beddc")
-            .populate("seller", "name email phone");
-
-        // Get all products
         const products = await productModel
             .find({
                 status: "approved",
                 isDiscount: { $ne: true },
             })
-            .populate("seller", "name email phone")
+            .populate({
+                path: "seller",
+                model: userModel,
+                select: "name email phone",
+            })
             .sort({ createdAt: -1 });
 
         res.status(200).json({
-            debug: {
-                databaseName,
-                userCollection,
-                productCollection,
-                testUser,
-                productSellerId: testProduct?.seller,
-                populatedSeller: populatedProduct?.seller,
-            },
             products,
         });
 
@@ -240,7 +214,6 @@ const getProducts = async (req, res) => {
         });
     }
 };
-
 
 
 // GET DISCOUNT PRODUCTS
