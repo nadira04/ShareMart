@@ -176,6 +176,7 @@ const createDiscountProduct = async (req, res) => {
     }
 };
 
+
 const getProducts = async (req, res) => {
     try {
         const products = await productModel
@@ -183,7 +184,7 @@ const getProducts = async (req, res) => {
                 status: "approved",
                 isDiscount: { $ne: true },
             })
-            .populate("seller", "name email")
+            .populate("seller", "name email phone")
             .sort({ createdAt: -1 });
 
         res.status(200).json({
@@ -197,6 +198,7 @@ const getProducts = async (req, res) => {
         });
     }
 };
+
 
 const getDiscountProducts = async (req, res) => {
     try {

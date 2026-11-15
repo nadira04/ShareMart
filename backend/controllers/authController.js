@@ -1,13 +1,15 @@
+
 const userModel = require("../models/user");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const signup = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, phone } = req.body;
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
+    const phoneRegex = /^01[3-9]\d{8}$/;
 
     if (!name || name.trim().length < 2) {
       return res.status(400).json({
@@ -15,13 +17,19 @@ const signup = async (req, res) => {
       });
     }
 
-    if (!emailRegex.test(email)) {
+    if (!email || !emailRegex.test(email)) {
       return res.status(400).json({
         message: "Please enter a valid email address",
       });
     }
 
-    if (!passwordRegex.test(password)) {
+    if (!phone || !phoneRegex.test(phone)) {
+      return res.status(400).json({
+        message: "Please enter a valid 11-digit Bangladeshi phone number",
+      });
+    }
+
+    if (!password || !passwordRegex.test(password)) {
       return res.status(400).json({
         message:
           "Password must contain uppercase, lowercase and a number, and be at least 6 characters",
@@ -36,11 +44,20 @@ const signup = async (req, res) => {
       });
     }
 
+    const existingPhone = await userModel.findOne({ phone });
+
+    if (existingPhone) {
+      return res.status(400).json({
+        message: "Phone number already exists",
+      });
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await userModel.create({
-      name,
+      name: name.trim(),
       email,
+      phone,
       password: hashedPassword,
       roles: [],
     });
@@ -51,10 +68,14 @@ const signup = async (req, res) => {
         id: user._id,
         name: user.name,
         email: user.email,
+        phone: user.phone,
         roles: user.roles,
       },
     });
+
   } catch (error) {
+    console.log("SIGNUP ERROR:", error);
+
     res.status(500).json({
       message: "Signup failed",
       error: error.message,
@@ -95,7 +116,10 @@ const login = async (req, res) => {
       });
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await bcrypt.compare(
+      password,
+      user.password
+    );
 
     if (!isMatch) {
       return res.status(401).json({
@@ -130,11 +154,15 @@ const login = async (req, res) => {
         id: user._id,
         name: user.name,
         email: user.email,
+        phone: user.phone || "",
         roles: user.roles,
         permissions,
       },
     });
+
   } catch (error) {
+    console.log("LOGIN ERROR:", error);
+
     res.status(500).json({
       message: "Server error",
       error: error.message,

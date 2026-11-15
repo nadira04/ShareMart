@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { createPortal } from "react-dom";
 
@@ -7,13 +8,24 @@ function AuthModal({ mode, onClose, onSwitchMode, onSuccess }) {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    phone: "",
     password: "",
   });
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    if (name === "phone") {
+      setFormData({
+        ...formData,
+        phone: value.replace(/\D/g, "").slice(0, 11),
+      });
+      return;
+    }
+
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [name]: value,
     });
   };
 
@@ -22,9 +34,23 @@ function AuthModal({ mode, onClose, onSwitchMode, onSuccess }) {
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
+    const phoneRegex = /^01[3-9]\d{8}$/;
 
     if (!emailRegex.test(formData.email)) {
       onSuccess("Please enter a valid email address", "error");
+      return;
+    }
+
+    if (!isLogin && formData.name.trim().length < 2) {
+      onSuccess("Please enter your valid name", "error");
+      return;
+    }
+
+    if (!isLogin && !phoneRegex.test(formData.phone)) {
+      onSuccess(
+        "Please enter a valid 11-digit Bangladeshi phone number",
+        "error"
+      );
       return;
     }
 
@@ -41,11 +67,6 @@ function AuthModal({ mode, onClose, onSwitchMode, onSuccess }) {
       return;
     }
 
-    if (!isLogin && formData.name.trim().length < 2) {
-      onSuccess("Please enter your name", "error");
-      return;
-    }
-
     const endpoint = isLogin
       ? "https://sharemart.onrender.com/api/auth/login"
       : "https://sharemart.onrender.com/api/auth/signup";
@@ -55,7 +76,12 @@ function AuthModal({ mode, onClose, onSwitchMode, onSuccess }) {
         email: formData.email,
         password: formData.password,
       }
-      : formData;
+      : {
+        name: formData.name.trim(),
+        email: formData.email,
+        phone: formData.phone,
+        password: formData.password,
+      };
 
     try {
       const response = await fetch(endpoint, {
@@ -79,13 +105,16 @@ function AuthModal({ mode, onClose, onSwitchMode, onSuccess }) {
 
           onClose();
           onSuccess("Login successful!", "success");
+
         } else {
           onClose();
           onSuccess("Signup successful!", "success");
         }
+
       } else {
-        onSuccess(data.message, "error");
+        onSuccess(data.message || "Something went wrong", "error");
       }
+
     } catch (error) {
       onSuccess("Server connection failed.", "error");
     }
@@ -103,9 +132,7 @@ function AuthModal({ mode, onClose, onSwitchMode, onSuccess }) {
         </button>
 
         <h2>
-          {isLogin
-            ? "Welcome Back"
-            : "Create Account"}
+          {isLogin ? "Welcome Back" : "Create Account"}
         </h2>
 
         <p>
@@ -117,14 +144,30 @@ function AuthModal({ mode, onClose, onSwitchMode, onSuccess }) {
         <form onSubmit={handleSubmit}>
 
           {!isLogin && (
-            <input
-              type="text"
-              name="name"
-              placeholder="Full Name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-            />
+            <>
+              <input
+                type="text"
+                name="name"
+                placeholder="Full Name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+              />
+
+              <input
+                type="tel"
+                name="phone"
+                placeholder="Phone Number (01XXXXXXXXX)"
+                value={formData.phone}
+                onChange={handleChange}
+                maxLength={11}
+                minLength={11}
+                pattern="01[3-9][0-9]{8}"
+                inputMode="numeric"
+                title="Enter a valid 11-digit Bangladeshi mobile number"
+                required
+              />
+            </>
           )}
 
           <input
@@ -164,7 +207,7 @@ function AuthModal({ mode, onClose, onSwitchMode, onSuccess }) {
         <p
           style={{
             marginTop: "16px",
-            fontSize: "14px"
+            fontSize: "14px",
           }}
         >
           {isLogin ? (
@@ -175,11 +218,9 @@ function AuthModal({ mode, onClose, onSwitchMode, onSuccess }) {
                 style={{
                   color: "#2f7d3c",
                   cursor: "pointer",
-                  fontWeight: 600
+                  fontWeight: 600,
                 }}
-                onClick={() =>
-                  onSwitchMode("signup")
-                }
+                onClick={() => onSwitchMode("signup")}
               >
                 Sign Up
               </span>
@@ -192,11 +233,9 @@ function AuthModal({ mode, onClose, onSwitchMode, onSuccess }) {
                 style={{
                   color: "#2f7d3c",
                   cursor: "pointer",
-                  fontWeight: 600
+                  fontWeight: 600,
                 }}
-                onClick={() =>
-                  onSwitchMode("login")
-                }
+                onClick={() => onSwitchMode("login")}
               >
                 Login
               </span>

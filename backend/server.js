@@ -21,7 +21,7 @@ app.use(express.json());
 app.get("/", (req, res) => {
   res.send("ShareMart Backend is running!");
 });
-
+app.disable("etag");
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/seller", sellerRoutes);
