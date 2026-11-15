@@ -188,6 +188,7 @@ console.log("NEW GET PRODUCTS CONTROLLER IS RUNNING");
 
 
 
+
 const getProducts = async (req, res) => {
     try {
         // Fetch approved products directly from MongoDB
