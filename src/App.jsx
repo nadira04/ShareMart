@@ -187,7 +187,7 @@ function App() {
           selectedCategory={selectedCategory}
           searchQuery={searchQuery}
           isLoggedIn={isLoggedIn}
-          onLoginClick={() => setShowAuthModal(true)}
+          onLoginClick={() => setAuthMode("login")}
         />
 
       ) : showDashboard && user?.permissions?.includes("role.view") ? (
