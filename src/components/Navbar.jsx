@@ -1,9 +1,13 @@
 
+import { useState } from "react";
+
 import {
   ShoppingCart,
   MapPin,
   User,
   ChevronDown,
+  Menu,
+  X,
 } from "lucide-react";
 
 function Navbar({
@@ -17,6 +21,8 @@ function Navbar({
   onDonatedItemClick,
   onDiscountClick,
 }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+
   let user = null;
 
   try {
@@ -25,12 +31,18 @@ function Navbar({
     console.error("Could not read saved user:", error);
   }
 
+  const handleNavigation = (callback) => {
+    callback?.();
+    setMenuOpen(false);
+  };
+
   return (
     <nav className="navbar">
       <div className="container nav-content">
+
         <div
           className="logo"
-          onClick={onHomeClick}
+          onClick={() => handleNavigation(onHomeClick)}
           style={{ cursor: "pointer" }}
         >
           <div className="logo-icon">♻</div>
@@ -40,59 +52,81 @@ function Navbar({
           </span>
         </div>
 
-        <div className="nav-links">
+        <div className={`nav-links ${menuOpen ? "mobile-open" : ""}`}>
+
           <a
             className={activePage === "home" ? "active" : ""}
-            onClick={onHomeClick}
-            style={{ cursor: "pointer" }}
+            onClick={() => handleNavigation(onHomeClick)}
           >
             Home
           </a>
 
           <a
             className={activePage === "donations" ? "active" : ""}
-            onClick={onDonatedItemClick}
-            style={{ cursor: "pointer" }}
+            onClick={() => handleNavigation(onDonatedItemClick)}
           >
             Donated Item
           </a>
 
           <a
             className={activePage === "discount" ? "active" : ""}
-            onClick={onDiscountClick}
-            style={{ cursor: "pointer" }}
+            onClick={() => handleNavigation(onDiscountClick)}
           >
             Discount Item
           </a>
 
           <a
             className={activePage === "marketplace" ? "active" : ""}
-            onClick={onMarketplaceClick}
-            style={{ cursor: "pointer" }}
+            onClick={() => handleNavigation(onMarketplaceClick)}
           >
             Marketplace
           </a>
 
-          <a style={{ cursor: "pointer" }}>
+          <a
+            onClick={() => {
+              handleNavigation(onHomeClick);
+              setTimeout(() => {
+                document.querySelector(".how-section")?.scrollIntoView({
+                  behavior: "smooth",
+                });
+              }, 100);
+            }}
+          >
             How It Works
           </a>
 
-          <a style={{ cursor: "pointer" }}>
+          <a
+            onClick={() => handleNavigation(onHomeClick)}
+          >
             About Us
           </a>
 
           {isLoggedIn && (
             <a
               className={activePage === "dashboard" ? "active" : ""}
-              onClick={onDashboardClick}
-              style={{ cursor: "pointer" }}
+              onClick={() => handleNavigation(onDashboardClick)}
             >
               Dashboard
             </a>
           )}
+
+          {isLoggedIn && (
+            <button
+              className="mobile-logout-btn"
+              onClick={() => {
+                onLogout?.();
+                setMenuOpen(false);
+              }}
+            >
+              <User size={18} />
+              {user?.name || "User"} | Logout
+            </button>
+          )}
+
         </div>
 
         <div className="nav-actions">
+
           <button className="location-btn">
             <MapPin size={16} />
             Dhaka, Bangladesh
@@ -114,14 +148,26 @@ function Navbar({
             </button>
           ) : (
             <button
-              className="login-btn"
+              className="login-btn desktop-login-btn"
               onClick={onLogout}
             >
               <User size={18} />
               {user?.name || "User"} | Logout
             </button>
           )}
+
+          <button
+            className="menu-toggle"
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={menuOpen}
+            type="button"
+          >
+            {menuOpen ? <X size={25} /> : <Menu size={25} />}
+          </button>
+
         </div>
+
       </div>
     </nav>
   );
