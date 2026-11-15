@@ -2,11 +2,17 @@
 import { useEffect, useState } from "react";
 import ProductDetails from "./ProductDetails";
 
-function Marketplace({ selectedCategory = "", searchQuery = "" }) {
+function Marketplace({
+    selectedCategory = "",
+    searchQuery = "",
+    isLoggedIn = false,
+    onLoginClick
+}) {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [selectedProduct, setSelectedProduct] = useState(null);
+    const [showLoginPopup, setShowLoginPopup] = useState(false);
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -52,7 +58,6 @@ function Marketplace({ selectedCategory = "", searchQuery = "" }) {
     const filteredProducts = products.filter((product) => {
         const category = (product.category || "").toLowerCase().trim();
         const selected = selectedCategory.toLowerCase().trim();
-
         const query = searchQuery.toLowerCase().trim();
 
         const matchesCategory =
@@ -70,6 +75,25 @@ function Marketplace({ selectedCategory = "", searchQuery = "" }) {
 
         return matchesCategory && matchesSearch;
     });
+
+    // Buy Now handler
+    const handleBuyNow = (product) => {
+        if (!isLoggedIn) {
+            setShowLoginPopup(true);
+            return;
+        }
+
+        setSelectedProduct(product);
+    };
+
+    // Close popup and open login modal
+    const handleLogin = () => {
+        setShowLoginPopup(false);
+
+        if (onLoginClick) {
+            onLoginClick();
+        }
+    };
 
     if (loading) {
         return (
@@ -145,15 +169,6 @@ function Marketplace({ selectedCategory = "", searchQuery = "" }) {
                                 <div
                                     className="product-card"
                                     key={product._id}
-                                    onClick={() => setSelectedProduct(product)}
-                                    role="button"
-                                    tabIndex={0}
-                                    onKeyDown={(e) => {
-                                        if (e.key === "Enter" || e.key === " ") {
-                                            e.preventDefault();
-                                            setSelectedProduct(product);
-                                        }
-                                    }}
                                 >
                                     {product.image ? (
                                         <img
@@ -201,12 +216,9 @@ function Marketplace({ selectedCategory = "", searchQuery = "" }) {
                                         <button
                                             className="view-details-btn"
                                             type="button"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                setSelectedProduct(product);
-                                            }}
+                                            onClick={() => handleBuyNow(product)}
                                         >
-                                            View Details →
+                                            Buy Now →
                                         </button>
 
                                     </div>
@@ -215,6 +227,56 @@ function Marketplace({ selectedCategory = "", searchQuery = "" }) {
 
                         </div>
                     </>
+                )}
+
+                {/* Login Required Popup */}
+                {showLoginPopup && (
+                    <div
+                        className="login-popup-overlay"
+                        onClick={() => setShowLoginPopup(false)}
+                    >
+                        <div
+                            className="login-popup"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <button
+                                className="popup-close"
+                                onClick={() => setShowLoginPopup(false)}
+                                aria-label="Close popup"
+                            >
+                                ×
+                            </button>
+
+                            <div className="popup-icon">
+                                <span>🔐</span>
+                            </div>
+
+                            <h2>Login Required!</h2>
+
+                            <p className="popup-subtitle">
+                                You're just one step away!
+                            </p>
+
+                            <p className="popup-message">
+                                Please log in to your ShareMart account
+                                before buying this product.
+                            </p>
+
+                            <button
+                                className="popup-login-btn"
+                                onClick={handleLogin}
+                            >
+                                Login Now →
+                            </button>
+
+                            <button
+                                className="popup-cancel-btn"
+                                onClick={() => setShowLoginPopup(false)}
+                            >
+                                Maybe Later
+                            </button>
+                        </div>
+                    </div>
                 )}
 
             </div>

@@ -182,9 +182,12 @@ function App() {
         <DiscountPage />
 
       ) : showMarketplace ? (
+
         <Marketplace
           selectedCategory={selectedCategory}
           searchQuery={searchQuery}
+          isLoggedIn={isLoggedIn}
+          onLoginClick={() => setShowAuthModal(true)}
         />
 
       ) : showDashboard && user?.permissions?.includes("role.view") ? (
