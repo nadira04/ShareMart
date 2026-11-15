@@ -1,7 +1,6 @@
 
 import React from "react";
 import "./ProductDetails.css";
-console.log("Seller Data:", product.seller);
 function ProductDetails({ product, onBack }) {
     if (!product) {
         return <div>Product not found.</div>;

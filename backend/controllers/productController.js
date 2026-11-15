@@ -1,4 +1,5 @@
 
+const mongoose = require("mongoose");
 const productModel = require("../models/product");
 const cloudinary = require("../config/cloudinary");
 
@@ -25,6 +26,8 @@ const uploadProductImage = async (file) => {
     return result.secure_url;
 };
 
+
+// CREATE NORMAL PRODUCT
 const createProduct = async (req, res) => {
     try {
         const {
@@ -68,6 +71,7 @@ const createProduct = async (req, res) => {
             message: "Product submitted for admin approval",
             product,
         });
+
     } catch (error) {
         console.log("PRODUCT ERROR:", error);
 
@@ -78,6 +82,8 @@ const createProduct = async (req, res) => {
     }
 };
 
+
+// CREATE DISCOUNT PRODUCT
 const createDiscountProduct = async (req, res) => {
     try {
         const {
@@ -166,6 +172,7 @@ const createDiscountProduct = async (req, res) => {
             message: "Discount product submitted for admin approval",
             product,
         });
+
     } catch (error) {
         console.log("DISCOUNT PRODUCT ERROR:", error);
 
@@ -177,8 +184,48 @@ const createDiscountProduct = async (req, res) => {
 };
 
 
+// GET ALL APPROVED PRODUCTS
 const getProducts = async (req, res) => {
     try {
+        const testId = "6ae771bf8ea8cdc67151385b";
+
+        // Database information
+        console.log("DATABASE:", mongoose.connection.name);
+
+        console.log(
+            "USER COLLECTION:",
+            mongoose.model("User").collection.name
+        );
+
+        // Check seller in User collection
+        const testUser = await mongoose
+            .model("User")
+            .findById(testId)
+            .select("name email phone");
+
+        console.log("TEST USER:", testUser);
+
+        // Check product seller ID
+        const testProduct = await productModel.findById(
+            "6aecd4433bc1d2173a7beddc"
+        );
+
+        console.log(
+            "PRODUCT SELLER ID:",
+            testProduct?.seller
+        );
+
+        // Test populate
+        const populatedProduct = await productModel
+            .findById("6aecd4433bc1d2173a7beddc")
+            .populate("seller", "name email phone");
+
+        console.log(
+            "POPULATED SELLER:",
+            populatedProduct?.seller
+        );
+
+        // Get all approved products
         const products = await productModel
             .find({
                 status: "approved",
@@ -190,16 +237,19 @@ const getProducts = async (req, res) => {
         res.status(200).json({
             products,
         });
+
     } catch (error) {
         console.log("PRODUCT ERROR:", error);
 
         res.status(500).json({
             message: "Failed to load products",
+            error: error.message,
         });
     }
 };
 
 
+// GET DISCOUNT PRODUCTS
 const getDiscountProducts = async (req, res) => {
     try {
         console.log("DATABASE:", productModel.db.name);
@@ -241,6 +291,8 @@ const getDiscountProducts = async (req, res) => {
     }
 };
 
+
+// GET SELLER DISCOUNT HISTORY
 const getSellerDiscountHistory = async (req, res) => {
     try {
         const products = await productModel
@@ -253,6 +305,7 @@ const getSellerDiscountHistory = async (req, res) => {
         res.status(200).json({
             products,
         });
+
     } catch (error) {
         console.log("DISCOUNT HISTORY ERROR:", error);
 
@@ -261,6 +314,7 @@ const getSellerDiscountHistory = async (req, res) => {
         });
     }
 };
+
 
 module.exports = {
     createProduct,
