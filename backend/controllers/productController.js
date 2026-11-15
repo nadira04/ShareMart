@@ -186,12 +186,8 @@ const createDiscountProduct = async (req, res) => {
 console.log("NEW GET PRODUCTS CONTROLLER IS RUNNING");
 // GET ALL APPROVED PRODUCTS
 
-
-
-
 const getProducts = async (req, res) => {
     try {
-        // Fetch approved products directly from MongoDB
         const products = await productModel.collection
             .find({
                 status: "approved",
@@ -200,16 +196,26 @@ const getProducts = async (req, res) => {
             .sort({ createdAt: -1 })
             .toArray();
 
-        // Attach seller information manually
         const finalProducts = await Promise.all(
             products.map(async (product) => {
                 let seller = null;
+                let sellerId = product.seller;
 
-                if (product.seller) {
+                // Handle Extended JSON object: { $oid: "..." }
+                if (sellerId && typeof sellerId === "object") {
+                    if (sellerId.$oid) {
+                        sellerId = sellerId.$oid;
+                    } else if (sellerId._id) {
+                        sellerId = sellerId._id;
+                    }
+                }
+
+                // Convert seller ID into a valid MongoDB ObjectId
+                if (sellerId && mongoose.Types.ObjectId.isValid(String(sellerId))) {
+                    const objectId = new mongoose.Types.ObjectId(String(sellerId));
+
                     const sellerData = await userModel.collection.findOne(
-                        {
-                            _id: product.seller,
-                        },
+                        { _id: objectId },
                         {
                             projection: {
                                 name: 1,
@@ -249,8 +255,6 @@ const getProducts = async (req, res) => {
         });
     }
 };
-
-
 
 // GET DISCOUNT PRODUCTS
 const getDiscountProducts = async (req, res) => {
