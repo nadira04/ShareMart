@@ -1,6 +1,7 @@
 
 import React from "react";
 import "./ProductDetails.css";
+
 function ProductDetails({ product, onBack }) {
     if (!product) {
         return <div>Product not found.</div>;
@@ -12,11 +13,11 @@ function ProductDetails({ product, onBack }) {
         product.seller?.mobile ||
         "";
 
-    const sellerEmail =
-        product.seller?.email || "";
+    const sellerEmail = product.seller?.email || "";
+    const sellerName = product.seller?.name || "ShareMart Seller";
 
-    const sellerName =
-        product.seller?.name || "ShareMart Seller";
+    // Remove spaces and formatting from phone number
+    const cleanPhone = sellerPhone.replace(/[^\d+]/g, "");
 
     const emailSubject = `Inquiry about ${product.name}`;
 
@@ -82,14 +83,23 @@ Thank you.`;
 
                         <div className="details-location">
                             <h3>📍 Pickup Address</h3>
-                            <p>{product.location || "Address not provided"}</p>
+                            <p>
+                                {product.location || "Address not provided"}
+                            </p>
                         </div>
 
                         <div className="details-seller">
                             <h3>Seller Information</h3>
+
                             <p>
                                 <strong>Name:</strong> {sellerName}
                             </p>
+
+                            <p>
+                                <strong>Phone:</strong>{" "}
+                                {sellerPhone || "Not available"}
+                            </p>
+
                             <p>
                                 <strong>Email:</strong>{" "}
                                 {sellerEmail || "Not available"}
@@ -97,15 +107,19 @@ Thank you.`;
                         </div>
 
                         <div className="seller-contact-buttons">
-                            {sellerPhone ? (
+
+                            {cleanPhone ? (
                                 <a
-                                    href={`tel:${sellerPhone}`}
+                                    href={`tel:${cleanPhone}`}
                                     className="call-seller-btn"
                                 >
                                     ☎ Call Now
                                 </a>
                             ) : (
-                                <button className="call-seller-btn" disabled>
+                                <button
+                                    className="call-seller-btn"
+                                    disabled
+                                >
                                     ☎ Phone Not Available
                                 </button>
                             )}
@@ -115,13 +129,17 @@ Thank you.`;
                                     href={emailLink}
                                     className="email-seller-btn"
                                 >
-                                    ✉ Ask Anything via Email
+                                    ✉ Email Seller
                                 </a>
                             ) : (
-                                <button className="email-seller-btn" disabled>
+                                <button
+                                    className="email-seller-btn"
+                                    disabled
+                                >
                                     ✉ Email Not Available
                                 </button>
                             )}
+
                         </div>
                     </div>
                 </div>

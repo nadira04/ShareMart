@@ -1018,3 +1018,23 @@ a {
   color: #e53935;
   font-size: 15px;
 }
+
+.view-details-btn {
+  display: block;
+  margin-left: auto;
+  margin-top: 15px;
+  padding: 10px 20px;
+  background-color: #2f7d3c;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.view-details-btn:hover {
+  background-color: #24632f;
+  transform: translateY(-2px);
+}
